@@ -49,17 +49,21 @@ p_idv <- ggplot(df_idv, aes(
     ),
     linewidth = .8
   ) +
-  # 🔹 Solo el último punto visible
+  # 🔹 Solo el último punto visible — ahora sí aislado
   geom_point_interactive(
     data = ultimo_por_grupo(df_idv, idv_group, mes),
     aes(
+      x = mes,
+      y = perc,
+      color = idv_group,
       tooltip = paste0(
         "<b>", idv_group, "</b><br>",
         format(mes, "%B %Y", locale = "es_ES.UTF-8"), ": ",
         perc, "%"
       )
     ),
-    size = 3
+    size = 3,
+    inherit.aes = FALSE
   ) +
   geom_hline(yintercept = 0, color = "black", linewidth = .2) +
   scale_x_date(labels = label_date("%b %y", locale = "es_ES")) +
