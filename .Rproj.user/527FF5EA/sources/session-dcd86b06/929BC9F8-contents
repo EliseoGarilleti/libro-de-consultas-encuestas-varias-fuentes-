@@ -8,6 +8,7 @@ library(scales)
 library(quarto)
 library(glue)
 library(lubridate)
+library(ggiraph)
 
 # Fuentes
 font_add_google("Roboto", "roboto")

@@ -25,28 +25,71 @@ df_idv<-df %>%
 ```
 
 ```{r, echo=FALSE}
-df_idv %>% 
-  ggplot(aes(mes, perc, color = idv_group)) +
-  geom_line(linewidth = .8) +
-  geom_point(data = ~.x %>%
-               group_by(idv_group) %>%
-               filter(mes == max(mes, na.rm = TRUE)) %>%
-               ungroup(), 
-             size = 3) +
+# ================================
+#   GRÁFICO INTERACTIVO ggiraph
+# ================================
+p_idv <- ggplot(df_idv, aes(
+  x = mes,
+  y = perc,
+  color = idv_group,
+  group = idv_group,
+  tooltip = paste0(
+    "<b>", idv_group, "</b><br>",
+    format(mes, "%B %Y", locale = "es_ES.UTF-8"), ": ",
+    perc, "%"
+  )
+)) +
+  geom_line_interactive(linewidth = .8) +
+  geom_point_interactive(
+    data = df_idv %>%
+      group_by(idv_group) %>%
+      filter(mes == max(mes, na.rm = TRUE)) %>%
+      ungroup(),
+    size = 3
+  ) +
   scale_x_date(labels = label_date("%b %y", locale = "es_ES")) +
   scale_color_manual(values = colores_partidos) +
-  theme_minimal() + 
-  labs(subtitle = "Intención de voto a <span style='color:#E3001B'><b>PSOE</b></span>, <span style='color:#1d4184'><b>PP</b></span>, <span style='color:#5BC035'><b>Vox</b></span>, <span style='color:#F57BA4'><b>Sumar</b></span> y <span style='color:#662D91'><b>Podemos</b></span>") +
+  theme_minimal() +
+  labs(
+    subtitle = "Intención de voto a 
+      <span style='color:#E3001B'><b>PSOE</b></span>, 
+      <span style='color:#1d4184'><b>PP</b></span>, 
+      <span style='color:#5BC035'><b>Vox</b></span>, 
+      <span style='color:#F57BA4'><b>Sumar</b></span> y 
+      <span style='color:#662D91'><b>Podemos</b></span>"
+  ) +
   theme_1
+
+girafe(
+  ggobj = p_idv,
+  options = list(
+    opts_hover(css = "stroke-width:3px;opacity:0.9;"),
+    opts_tooltip(
+      css = "background:white;
+             color:black;
+             padding:6px;
+             border-radius:6px;
+             box-shadow:0px 1px 3px rgba(0,0,0,0.2);
+             font-family:Roboto;
+             font-size:13px;"
+    ),
+    opts_toolbar(saveaspng = TRUE)
+  )
+)
 ```
 
 ```{r, include=FALSE}
-Sys.setlocale("LC_TIME", "es_ES.UTF-8") %||%
-  Sys.setlocale("LC_TIME", "Spanish_Spain.1252") %||%
-  Sys.setlocale("LC_TIME", "es_ES")
+invisible(
+  Sys.setlocale("LC_TIME", "es_ES.UTF-8") %||%
+    Sys.setlocale("LC_TIME", "Spanish_Spain.1252") %||%
+    Sys.setlocale("LC_TIME", "es_ES")
+)
 ```
 
-```{r, include=FALSE}
+```{r, echo=FALSE}
+# ================================
+#   RESUMEN AUTOMÁTICO
+# ================================
 resumen <- df_idv %>%
   group_by(idv_group) %>%
   summarise(

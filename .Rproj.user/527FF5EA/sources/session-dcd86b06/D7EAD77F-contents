@@ -65,46 +65,6 @@
 \fi
 \makeatother
 
-\usepackage{color}
-\usepackage{fancyvrb}
-\newcommand{\VerbBar}{|}
-\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
-% Add ',fontsize=\small' for more characters per line
-\usepackage{framed}
-\definecolor{shadecolor}{RGB}{241,243,245}
-\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
-\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.40,0.45,0.13}{#1}}
-\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
-\newcommand{\CharTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
-\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
-\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
-\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
-\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\ExtensionTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
-\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.28,0.35,0.67}{#1}}
-\newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.46,0.62}{#1}}
-\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
-\newcommand{\NormalTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
-\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
-\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\RegionMarkerTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
-\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
-\newcommand{\StringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
-\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.07,0.07,0.07}{#1}}
-\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
-\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
 
 \usepackage{longtable,booktabs,array}
 \usepackage{calc} % for calculating minipage widths
@@ -255,7 +215,7 @@
 \urlstyle{same}
 \hypersetup{
   pdftitle={Libro de Consultas},
-  pdfauthor={Eliseo},
+  pdfauthor={Unidad de Análisis y Estudios},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -272,7 +232,7 @@
 }
 \makeatother
 \subtitle{Tendencias electorales (varias encuestas)}
-\author{Eliseo}
+\author{Unidad de Análisis y Estudios}
 \date{}
 \begin{document}
 \maketitle
@@ -332,9 +292,9 @@ Tendencias electorales (varias encuestas)
 
 \chapter{Introducción}\label{introducciuxf3n}
 
-Este documento recoge las principales estimaciones de intención de voto
-y variables relacionadas, basadas en datos acumulados de encuestas
-recientes.\\
+Este documento recoge la intención de voto a los principales partidos y
+otras variables relacionadas, basadas en datos acumulados de encuestas
+desde septiembre de 2023.\\
 A continuación se muestran los resultados desagregados por sexo, edad y
 otras variables de interés.
 
@@ -342,85 +302,27 @@ otras variables de interés.
 
 \chapter{Intención de voto (IDV)}\label{intenciuxf3n-de-voto-idv}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{knitr}\SpecialCharTok{::}\NormalTok{opts\_chunk}\SpecialCharTok{$}\FunctionTok{set}\NormalTok{(}\AttributeTok{cache =} \ConstantTok{FALSE}\NormalTok{, }\AttributeTok{fig.path =} \StringTok{"figures/"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
+\pandocbounded{\includegraphics[keepaspectratio]{figures/unnamed-chunk-4-1.pdf}}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Cargar entorno y configuraciones}
-\FunctionTok{source}\NormalTok{(}\StringTok{"code/00\_setup.R"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
+{PP}: En septiembre de 2023 un 24.6\% afirmaba que les votaría, hoy lo
+hace un 18.3\%, una diferencia de -6.3 puntos. El dato más bajo fue
+18.3\% en octubre de 2025, y el más alto 26.5\% en diciembre de 2023.
 
-\begin{verbatim}
--- Attaching core tidyverse packages ------------------------ tidyverse 2.0.0 --
-v dplyr     1.1.4     v readr     2.1.5
-v forcats   1.0.1     v stringr   1.5.2
-v ggplot2   4.0.0     v tibble    3.3.0
-v lubridate 1.9.4     v tidyr     1.3.1
-v purrr     1.1.0     
--- Conflicts ------------------------------------------ tidyverse_conflicts() --
-x dplyr::filter() masks stats::filter()
-x dplyr::lag()    masks stats::lag()
-i Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
-Loading required package: sysfonts
+{PSOE}: En septiembre de 2023 un 24.1\% afirmaba que les votaría, hoy lo
+hace un 19.1\%, una diferencia de -5 puntos. El dato más bajo fue 16\%
+en julio de 2025, y el más alto 24.1\% en septiembre de 2023.
 
-Loading required package: showtextdb
+{Podemos}: En enero de 2024 un 0.8\% afirmaba que les votaría, hoy lo
+hace un 3\%, una diferencia de 2.2 puntos. El dato más bajo fue 0.6\% en
+marzo de 2024, y el más alto 3.7\% en agosto de 2025.
 
+{Sumar}: En septiembre de 2023 un 9.2\% afirmaba que les votaría, hoy lo
+hace un 4.8\%, una diferencia de -4.4 puntos. El dato más bajo fue 4\%
+en enero de 2025, y el más alto 9.2\% en septiembre de 2023.
 
-Attaching package: 'flextable'
-
-
-The following object is masked from 'package:purrr':
-
-    compose
-
-
-
-Attaching package: 'scales'
-
-
-The following object is masked from 'package:purrr':
-
-    discard
-
-
-The following object is masked from 'package:readr':
-
-    col_factor
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{source}\NormalTok{(}\StringTok{"code/01\_theme.R"}\NormalTok{)}
-\FunctionTok{source}\NormalTok{(}\StringTok{"code/02\_datos.R"}\NormalTok{)}
-
-\CommentTok{\# Gráfico principal de IDV}
-\NormalTok{df }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{group\_by}\NormalTok{(mes, idv\_group) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{tally}\NormalTok{(}\AttributeTok{wt =}\NormalTok{ ponde\_mes\_ajustada) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{perc =} \FunctionTok{round}\NormalTok{((n }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(n) }\SpecialCharTok{*} \DecValTok{100}\NormalTok{), }\DecValTok{1}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{filter}\NormalTok{(idv\_group }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"PSOE"}\NormalTok{, }\StringTok{"PP"}\NormalTok{, }\StringTok{"Vox"}\NormalTok{, }\StringTok{"Sumar"}\NormalTok{, }\StringTok{"Podemos"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(mes, perc, }\AttributeTok{color =}\NormalTok{ idv\_group)) }\SpecialCharTok{+}
-  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{linewidth =}\NormalTok{ .}\DecValTok{6}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{geom\_point}\NormalTok{(}
-    \AttributeTok{data =} \SpecialCharTok{\textasciitilde{}}\NormalTok{.x }\SpecialCharTok{\%\textgreater{}\%}
-      \FunctionTok{group\_by}\NormalTok{(idv\_group) }\SpecialCharTok{\%\textgreater{}\%}
-      \FunctionTok{filter}\NormalTok{(mes }\SpecialCharTok{==} \FunctionTok{max}\NormalTok{(mes, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
-      \FunctionTok{ungroup}\NormalTok{(),}
-    \AttributeTok{size =} \FloatTok{2.5}
-\NormalTok{  ) }\SpecialCharTok{+}
-  \FunctionTok{scale\_x\_date}\NormalTok{(}\AttributeTok{labels =} \FunctionTok{label\_date}\NormalTok{(}\StringTok{"\%b \%y"}\NormalTok{, }\AttributeTok{locale =} \StringTok{"es\_ES"}\NormalTok{)) }\SpecialCharTok{+}
-  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values =}\NormalTok{ colores\_partidos) }\SpecialCharTok{+}
-  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+} 
-\NormalTok{  theme\_1}
-\end{Highlighting}
-\end{Shaded}
-
-\pandocbounded{\includegraphics[keepaspectratio]{figures/unnamed-chunk-2-1.pdf}}
+{Vox}: En septiembre de 2023 un 9.1\% afirmaba que les votaría, hoy lo
+hace un 15.4\%, una diferencia de 6.3 puntos. El dato más bajo fue 8.4\%
+en noviembre de 2024, y el más alto 15.4\% en octubre de 2025.
 
 
 
