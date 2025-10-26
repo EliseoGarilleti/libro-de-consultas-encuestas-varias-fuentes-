@@ -1,5 +1,5 @@
 {
-  "hash": "8211fb948ac4c10fbc94ac58b284d414",
+  "hash": "20d7d89a7ff494b20c3dbcf4fce76edd",
   "result": {
     "engine": "knitr",
     "markdown": "---\ntitle: \"Intención de voto por género\"\n---\n\n\n\n\n\n\n::: {.cell}\n::: {.cell-output-display}\n![](figures/p_idv_genero_static.png){width=8in}\n:::\n:::\n\n\n<br>\n",

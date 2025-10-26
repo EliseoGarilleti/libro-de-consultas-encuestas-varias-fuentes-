@@ -38,8 +38,11 @@ df_idv<-df %>%
 p_idv <- ggplot(df_idv, aes(
   x = mes, y = perc, color = idv_group, group = idv_group
 )) +
-  # Línea estética (sin tooltip, porque el tooltip por línea es único por grupo)
-  geom_line_interactive(linewidth = .8) +
+  # Línea estética SIN tooltip (lo anulamos explícitamente)
+  geom_line_interactive(
+    aes(tooltip = NA_character_),  # <- clave para anularlo
+    linewidth = .8
+  ) +
   
   # PUNTOS INVISIBLES: capturan el hover por mes (tooltip correcto) pero no se ven
   geom_point_interactive(
@@ -52,7 +55,7 @@ p_idv <- ggplot(df_idv, aes(
         perc, "%"
       )
     ),
-    size = 7, alpha = 0, show.legend = FALSE, inherit.aes = FALSE
+    size = 9, alpha = 0, stroke = 0, show.legend = FALSE, inherit.aes = FALSE
   ) +
   
   # ÚLTIMO PUNTO VISIBLE (con tooltip)
@@ -83,12 +86,11 @@ p_idv <- ggplot(df_idv, aes(
   ) +
   theme_1
 
-# Render condicional
+# Render condicional (igual que ya tenías)
 if (knitr::is_html_output()) {
   girafe(
     ggobj = p_idv,
     options = list(
-      # Hover más “generoso” para móvil y ratón
       opts_hover(css = "stroke-width:3px;opacity:0.9;"),
       opts_tooltip(css = "background:white;color:black;padding:6px;
                            border-radius:6px;box-shadow:0px 1px 3px rgba(0,0,0,0.2);
