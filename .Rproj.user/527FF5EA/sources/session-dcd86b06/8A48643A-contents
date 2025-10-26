@@ -1,3 +1,0 @@
-packageVersion("cli")
-packageVersion("rlang")
-packageVersion("processx")

@@ -4,10 +4,17 @@ format:
   html: default
   pdf: default
 ---
+
 ```{r, include=FALSE}
 knitr::opts_chunk$set(cache = FALSE, fig.path = "figures/")
-```
 
+# Asegurar idioma español para los meses
+locales <- c("es_ES.UTF-8", "Spanish_Spain.1252", "es_ES")
+for (loc in locales) {
+  res <- try(Sys.setlocale("LC_TIME", loc), silent = TRUE)
+  if (!inherits(res, "try-error") && !is.na(res)) break
+}
+```
 
 ```{r, include=FALSE}
 # Cargar entorno y configuraciones
@@ -28,25 +35,19 @@ df_idv<-df %>%
 # ================================
 #   GRÁFICO INTERACTIVO ggiraph
 # ================================
+
 p_idv <- ggplot(df_idv, aes(
-  x = mes,
-  y = perc,
-  color = idv_group,
-  group = idv_group,
-  tooltip = paste0(
-    "<b>", idv_group, "</b><br>",
-    format(mes, "%B %Y", locale = "es_ES.UTF-8"), ": ",
-    perc, "%"
-  )
+  x = mes, y = perc, color = idv_group, group = idv_group,
+  tooltip = paste0("<b>", idv_group, "</b><br>",
+                   format(mes, "%B %Y", locale = "es_ES.UTF-8"), ": ",
+                   perc, "%")
 )) +
   geom_line_interactive(linewidth = .8) +
   geom_point_interactive(
-    data = df_idv %>%
-      group_by(idv_group) %>%
-      filter(mes == max(mes, na.rm = TRUE)) %>%
-      ungroup(),
+    data = ultimo_por_grupo(df_idv, idv_group, mes),
     size = 3
   ) +
+  geom_hline(yintercept = 0, color = "black", linewidth = .2) +
   scale_x_date(labels = label_date("%b %y", locale = "es_ES")) +
   scale_color_manual(values = colores_partidos) +
   theme_minimal() +
@@ -60,30 +61,26 @@ p_idv <- ggplot(df_idv, aes(
   ) +
   theme_1
 
-girafe(
-  ggobj = p_idv,
-  options = list(
-    opts_hover(css = "stroke-width:3px;opacity:0.9;"),
-    opts_tooltip(
-      css = "background:white;
-             color:black;
-             padding:6px;
-             border-radius:6px;
-             box-shadow:0px 1px 3px rgba(0,0,0,0.2);
-             font-family:Roboto;
-             font-size:13px;"
-    ),
-    opts_toolbar(saveaspng = TRUE)
+# --- Si estamos generando HTML -> gráfico interactivo
+if (knitr::is_html_output()) {
+  girafe(
+    ggobj = p_idv,
+    options = list(
+      opts_hover(css = "stroke-width:3px;opacity:0.9;"),
+      opts_tooltip(css = "background:white;color:black;padding:6px;
+                            border-radius:6px;box-shadow:0px 1px 3px rgba(0,0,0,0.2);
+                            font-family:Roboto;font-size:13px;"),
+      opts_toolbar(saveaspng = TRUE)
+    )
   )
-)
-```
-
-```{r, include=FALSE}
-invisible(
-  Sys.setlocale("LC_TIME", "es_ES.UTF-8") %||%
-    Sys.setlocale("LC_TIME", "Spanish_Spain.1252") %||%
-    Sys.setlocale("LC_TIME", "es_ES")
-)
+} else {
+  # --- Si estamos generando PDF -> guardar imagen estática ---
+  dir.create("figures", showWarnings = FALSE)
+  static_plot_path <- file.path("figures", "p_idv_static.png")
+  ggsave(static_plot_path, plot = p_idv, width = 8, height = 5, dpi = 300)
+  Sys.sleep(1)
+  knitr::include_graphics(static_plot_path)
+}
 ```
 
 ```{r, echo=FALSE}
@@ -123,6 +120,7 @@ resumen <- df_idv %>%
 ```
 
 ```{r, results='asis', echo=FALSE}
+cat("<br>")
 cat("<ul>")
 cat(paste(resumen$texto, collapse = "\n"))
 cat("</ul>")

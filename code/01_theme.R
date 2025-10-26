@@ -12,14 +12,14 @@ theme_1 <- theme(
   panel.spacing.y = unit(1, "lines"),
   panel.spacing.x = unit(2, "lines"),
   legend.position = "None",
-  strip.text = element_text(family = "roboto", size = 15, lineheight = 0.4),
+  strip.text = element_text(family = "roboto", size = 14, lineheight = 0.4),
   axis.title = element_blank(),
   axis.text.x = element_text(family = "roboto", size = 14, face = "plain", lineheight = 0.4),
   axis.text.y = element_text(family = "roboto", size = 14, face = "plain", lineheight = 0.4),
   panel.grid.minor = element_blank(),
   panel.grid.major.y = element_line(linewidth = 0.2, color = "grey80"),
   plot.title = element_text(family = "roboto-medium", size = 18, face = "bold"),
-  plot.subtitle = element_markdown(family = "roboto-light", size = 16, color = "gray10"),
+  plot.subtitle = element_markdown(family = "roboto-light", size = 16, color = "gray10", lineheight = 1.2),
   plot.caption = element_text(family = "roboto-light", size = 30, color = "gray10"),
   plot.margin = margin(t = 10, r = 5, b = 10, l = 5)
 )

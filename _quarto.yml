@@ -8,21 +8,33 @@ book:
   author: "Unidad de Análisis y Estudios"
   chapters:
     - index.qmd
-    - 01_idv.qmd
+    - part: "1 · Intención de voto (IDV)"
+      chapters:
+        - 01_idv.qmd
+        - 01_1_idv_genero.qmd
 
 format:
   html:
     theme: cosmo
     toc: true
     css: styles.css
+    embed-resources: true
   pdf:
     documentclass: scrreprt
     pdf-engine: xelatex
     toc: true
-    include-in-header: 
-      - cover-style.tex      # define fuentes y colores
-    include-before-body: 
-      - cover.tex            # crea la portada azul
-    keep-tex: true           # conserva el .tex intermedio para depuración
+    prefer-html: true
+    self-contained: true
+    include-in-header:
+      - cover-style.tex
+    include-before-body:
+      - cover.tex
+    keep-tex: true
 
+execute:
+  freeze: auto
+  warning: false
+  message: false
+
+prefer-html: true
 editor: visual

@@ -1,0 +1,81 @@
+---
+title: "1.1 Intención de voto por género"
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, fig.path = "figures/")
+
+# Idioma para los meses
+locales <- c("es_ES.UTF-8", "Spanish_Spain.1252", "es_ES")
+for (loc in locales) {
+  res <- try(Sys.setlocale("LC_TIME", loc), silent = TRUE)
+  if (!inherits(res, "try-error") && !is.na(res)) break
+}
+
+# Cargar entorno y funciones
+source("code/00_setup.R")
+source("code/01_theme.R")
+source("code/02_datos.R")
+```
+
+```{r, include=FALSE}
+# Datos: IDV por género
+df_idv_gndr <- df %>%
+  group_by(mes, genero, idv_group) %>%
+  tally(wt = ponde_mes_ajustada) %>%
+  mutate(perc = round(n / sum(n) * 100, 1)) %>%
+  filter(idv_group %in% c("PSOE", "PP", "Vox", "Sumar", "Podemos"))
+```
+
+```{r, echo=FALSE}
+# Gráfico interactivo con facet_wrap
+p_idv_gndr <- ggplot(df_idv_gndr, aes(
+  x = mes, y = perc, color = idv_group, group = idv_group,
+  tooltip = paste0("<b>", idv_group, "</b><br>",
+                   format(mes, "%B %Y", locale = "es_ES.UTF-8"), ": ",
+                   perc, "%")
+)) +
+  geom_line_interactive(linewidth = .8) +
+  geom_point_interactive(
+    data = ultimo_por_grupo(df_idv_gndr, idv_group, mes),
+    size = 3
+  ) +
+  geom_hline(yintercept = 0, color = "black", linewidth = .2) +
+  facet_wrap(~genero) +
+  scale_x_date(labels = label_date("%b %y", locale = "es_ES")) +
+  scale_color_manual(values = colores_partidos) +
+  theme_minimal() +
+  labs(
+    subtitle = "Evolución de la intención de voto según <b>género</b> para
+      <br><span style='color:#E3001B'><b>PSOE</b></span>, 
+      <span style='color:#1d4184'><b>PP</b></span>, 
+      <span style='color:#5BC035'><b>Vox</b></span>, 
+      <span style='color:#F57BA4'><b>Sumar</b></span> y 
+      <span style='color:#662D91'><b>Podemos</b></span>"
+  ) +
+  theme_1
+
+# Render interactivo
+if (knitr::is_html_output()) {
+  girafe(
+    ggobj = p_idv_gndr,
+    options = list(
+      opts_hover(css = "stroke-width:3px;opacity:0.9;"),
+      opts_tooltip(css = "background:white;color:black;padding:6px;
+                            border-radius:6px;box-shadow:0px 1px 3px rgba(0,0,0,0.2);
+                            font-family:Roboto;font-size:13px;"),
+      opts_toolbar(saveaspng = TRUE)
+    )
+  )
+} else {
+  dir.create("figures", showWarnings = FALSE)
+  static_plot_path <- file.path("figures", "p_idv_genero_static.png")
+  ggsave(static_plot_path, plot = p_idv_gndr, width = 8, height = 5, dpi = 300)
+  Sys.sleep(1)
+  knitr::include_graphics(static_plot_path)
+}
+```
+
+```{r, results='asis', echo=FALSE}
+cat("<br>")
+```
