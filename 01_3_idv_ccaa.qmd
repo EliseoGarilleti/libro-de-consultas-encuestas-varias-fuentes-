@@ -1,0 +1,184 @@
+---
+title: "Intención de voto por CCAA"
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, fig.path = "figures/")
+
+# Idioma para los meses
+locales <- c("es_ES.UTF-8", "Spanish_Spain.1252", "es_ES")
+for (loc in locales) {
+  res <- try(Sys.setlocale("LC_TIME", loc), silent = TRUE)
+  if (!inherits(res, "try-error") && !is.na(res)) break
+}
+
+# Cargar entorno y funciones
+source("code/00_setup.R")
+source("code/01_theme.R")
+source("code/02_datos.R")
+```
+
+```{r, include=FALSE}
+# Datos: IDV por género
+df_idv_ccaa <- df %>%
+  group_by(mes, ccaa, idv_group) %>%
+  tally(wt = ponde_mes_ajustada) %>%
+  mutate(perc = round(n / sum(n) * 100, 1)) %>%
+  filter(idv_group %in% c("PSOE", "PP", "Vox", "Sumar", "Podemos")) %>% 
+  filter(ccaa %in% c("Andalucía", "Comunidad de Madrid", "Cataluña", "Comunitat Valenciana",
+                     "Castilla y León", "País Vasco", "Castilla-La Mancha", "Galicia", "Canarias"))
+```
+
+```{r, echo=FALSE}
+# Gráfico interactivo con facet_wrap
+# ================================
+#   GRÁFICO INTERACTIVO ggiraph (por género)
+# ================================
+p_idv_ccaa <- ggplot(df_idv_ccaa, aes(
+  x = mes, y = perc, color = idv_group, group = idv_group
+)) +
+  # Línea sin tooltip (para evitar el error de tooltip único)
+  geom_line_interactive(
+    aes(tooltip = NA_character_),
+    linewidth = .5
+  ) +
+  
+  # Puntos invisibles — capturan el hover correcto por mes
+  geom_point_interactive(
+    data = df_idv_ccaa,
+    aes(
+      x = mes, y = perc, color = idv_group,
+      tooltip = paste0(
+        "<b>", idv_group, "</b><br>",
+        format(mes, "%B %Y", locale = "es_ES.UTF-8"), ": ",
+        perc, "%"
+      )
+    ),
+    size = 9, alpha = 0, stroke = 0, show.legend = FALSE, inherit.aes = FALSE
+  ) +
+  
+  # Último punto visible
+  geom_point_interactive(
+    data = ultimo_por_grupo(df_idv_ccaa, interaction(idv_group, ccaa), mes),
+    aes(
+      x = mes, y = perc, color = idv_group,
+      tooltip = paste0(
+        "<b>", idv_group, "</b><br>",
+        format(mes, "%B %Y", locale = "es_ES.UTF-8"), ": ",
+        perc, "%"
+      )
+    ),
+    size = 2, inherit.aes = FALSE
+  ) +
+  
+  geom_hline(yintercept = 0, color = "black", linewidth = .2) +
+  facet_wrap(~ccaa, ncol = 3) +
+  scale_x_date(labels = label_date("%b %y", locale = "es_ES")) +
+  scale_color_manual(values = colores_partidos) +
+  theme_minimal() +
+  labs(
+    subtitle = "Intención de voto según <b>CCAA</b> a
+      <span style='color:#E3001B'><b>PSOE</b></span>, 
+      <span style='color:#1d4184'><b>PP</b></span>, 
+      <span style='color:#5BC035'><b>Vox</b></span>, 
+      <span style='color:#F57BA4'><b>Sumar</b></span> y 
+      <span style='color:#662D91'><b>Podemos</b></span>"
+  ) +
+  theme_3
+
+# --- Render condicional ---
+if (knitr::is_html_output()) {
+  girafe(
+    width_svg = 7,   
+    height_svg = 7,    
+    ggobj = p_idv_ccaa,
+    options = list(
+      opts_hover(css = "stroke-width:3px;opacity:0.9;"),
+      opts_tooltip(css = "background:white;color:black;padding:6px;
+                            border-radius:6px;box-shadow:0px 1px 3px rgba(0,0,0,0.2);
+                            font-family:Roboto;font-size:13px;"),
+      opts_toolbar(saveaspng = TRUE)
+    )
+  )
+} else {
+  dir.create("figures", showWarnings = FALSE)
+  static_plot_path <- file.path("figures", "p_idv_ccaa_static.png")
+  ggsave(static_plot_path, plot = p_idv_ccaa, width = 8, height = 5, dpi = 300)
+  Sys.sleep(1)
+  knitr::include_graphics(static_plot_path)
+}
+```
+
+```{r, echo=FALSE}
+# ================================
+#   RESUMEN AUTOMÁTICO POR CCAA
+# ================================
+
+# Último mes disponible
+ultimo_mes <- max(df_idv_ccaa$mes, na.rm = TRUE)
+
+# Ranking del último mes por comunidad
+resumen_ccaa <- df_idv_ccaa %>%
+  filter(mes == ultimo_mes) %>%
+  group_by(ccaa) %>%
+  arrange(ccaa, desc(perc)) %>%
+  mutate(ranking = row_number()) %>%
+  ungroup()
+
+# Partido con mayor intención de voto actual por comunidad
+lider_actual <- resumen_ccaa %>%
+  filter(ranking == 1) %>%
+  select(ccaa, partido_actual = idv_group, perc_actual = perc)
+
+# Partido que más veces ha liderado en cada CCAA
+lider_historico <- df_idv_ccaa %>%
+  group_by(ccaa, mes) %>%
+  slice_max(order_by = perc, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  count(ccaa, idv_group, name = "veces_lider") %>%
+  group_by(ccaa) %>%
+  slice_max(order_by = veces_lider, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  rename(partido_historico = idv_group)
+
+# Posición actual del PSOE y su media histórica
+ranking_psoe <- resumen_ccaa %>%
+  filter(idv_group == "PSOE") %>%
+  select(ccaa, ranking_actual = ranking, perc_psoe = perc)
+
+ranking_psoe_historico <- df_idv_ccaa %>%
+  group_by(ccaa, mes) %>%
+  arrange(desc(perc)) %>%
+  mutate(ranking = row_number()) %>%
+  ungroup() %>%
+  filter(idv_group == "PSOE") %>%
+  group_by(ccaa) %>%
+  summarise(ranking_mas_frecuente = as.numeric(names(sort(table(ranking), decreasing = TRUE))[1])) %>%
+  ungroup()
+
+# Combinar todo
+resumen_final_ccaa <- lider_actual %>%
+  left_join(lider_historico, by = "ccaa") %>%
+  left_join(ranking_psoe, by = "ccaa") %>%
+  left_join(ranking_psoe_historico, by = "ccaa") %>%
+  mutate(
+    texto = glue::glue(
+      "<li><b>{ccaa}</b>: En {format(ultimo_mes, '%B de %Y', locale = 'es_ES.UTF-8')}, 
+      el partido con mayor intención de voto es <b>{partido_actual}</b>
+      ({perc_actual}%). A lo largo del periodo analizado, 
+      <b>{partido_historico}</b> ha liderado la intención de voto más veces. 
+      Actualmente, el <b>PSOE</b> ocupa la posición {ranking_actual} con un 
+      {perc_psoe}%, y durante la mayor parte del periodo ha ocupado el puesto 
+      {ranking_mas_frecuente}.</li>"
+    )
+  )
+```
+
+```{r, results='asis', echo=FALSE}
+# Mostrar el resumen en HTML
+cat("<br>")
+cat("<ul>")
+cat(paste(resumen_final_ccaa$texto, collapse = "\n"))
+cat("</ul>")
+```
+

@@ -1,0 +1,21 @@
+{
+  "hash": "0e5e2dee09325123d580dc3921989ecb",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Intención de voto por CCAA\"\n---\n\n\n\n\n\n\n::: {.cell}\n::: {.cell-output-display}\n![](figures/p_idv_ccaa_static.png){width=8in}\n:::\n:::\n\n\n\n::: {.cell}\n\n:::\n\n\n<br><ul><li><b>Andalucía</b>: En octubre de 2025, \nel partido con mayor intención de voto es <b>PP</b>\n(21.7%). A lo largo del periodo analizado, \n<b>PP</b> ha liderado la intención de voto más veces. \nActualmente, el <b>PSOE</b> ocupa la posición 2 con un \n19.4%, y durante la mayor parte del periodo ha ocupado el puesto \n2.</li>\n<li><b>Canarias</b>: En octubre de 2025, \nel partido con mayor intención de voto es <b>Vox</b>\n(24.8%). A lo largo del periodo analizado, \n<b>PSOE</b> ha liderado la intención de voto más veces. \nActualmente, el <b>PSOE</b> ocupa la posición 2 con un \n23.6%, y durante la mayor parte del periodo ha ocupado el puesto \n1.</li>\n<li><b>Castilla y León</b>: En octubre de 2025, \nel partido con mayor intención de voto es <b>PP</b>\n(24.2%). A lo largo del periodo analizado, \n<b>PP</b> ha liderado la intención de voto más veces. \nActualmente, el <b>PSOE</b> ocupa la posición 2 con un \n23.5%, y durante la mayor parte del periodo ha ocupado el puesto \n2.</li>\n<li><b>Castilla-La Mancha</b>: En octubre de 2025, \nel partido con mayor intención de voto es <b>PP</b>\n(26.2%). A lo largo del periodo analizado, \n<b>PP</b> ha liderado la intención de voto más veces. \nActualmente, el <b>PSOE</b> ocupa la posición 2 con un \n24.7%, y durante la mayor parte del periodo ha ocupado el puesto \n2.</li>\n<li><b>Cataluña</b>: En octubre de 2025, \nel partido con mayor intención de voto es <b>PSOE</b>\n(18.9%). A lo largo del periodo analizado, \n<b>PSOE</b> ha liderado la intención de voto más veces. \nActualmente, el <b>PSOE</b> ocupa la posición 1 con un \n18.9%, y durante la mayor parte del periodo ha ocupado el puesto \n1.</li>\n<li><b>Comunidad de Madrid</b>: En octubre de 2025, \nel partido con mayor intención de voto es <b>PP</b>\n(23.5%). A lo largo del periodo analizado, \n<b>PP</b> ha liderado la intención de voto más veces. \nActualmente, el <b>PSOE</b> ocupa la posición 2 con un \n19.4%, y durante la mayor parte del periodo ha ocupado el puesto \n2.</li>\n<li><b>Comunitat Valenciana</b>: En octubre de 2025, \nel partido con mayor intención de voto es <b>Vox</b>\n(19.6%). A lo largo del periodo analizado, \n<b>PP</b> ha liderado la intención de voto más veces. \nActualmente, el <b>PSOE</b> ocupa la posición 3 con un \n16.7%, y durante la mayor parte del periodo ha ocupado el puesto \n2.</li>\n<li><b>Galicia</b>: En octubre de 2025, \nel partido con mayor intención de voto es <b>PP</b>\n(23.1%). A lo largo del periodo analizado, \n<b>PP</b> ha liderado la intención de voto más veces. \nActualmente, el <b>PSOE</b> ocupa la posición 2 con un \n17.8%, y durante la mayor parte del periodo ha ocupado el puesto \n2.</li>\n<li><b>País Vasco</b>: En octubre de 2025, \nel partido con mayor intención de voto es <b>PSOE</b>\n(19.5%). A lo largo del periodo analizado, \n<b>PSOE</b> ha liderado la intención de voto más veces. \nActualmente, el <b>PSOE</b> ocupa la posición 1 con un \n19.5%, y durante la mayor parte del periodo ha ocupado el puesto \n1.</li></ul>\n\n",
+    "supporting": [
+      "01_3_idv_ccaa_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {
+      "knitr": [
+        "{\"type\":\"list\",\"attributes\":{},\"value\":[]}"
+      ]
+    },
+    "preserve": null,
+    "postProcess": false
+  }
+}

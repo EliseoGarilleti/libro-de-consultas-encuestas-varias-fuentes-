@@ -46,7 +46,7 @@ theme_3 <- theme(
   legend.position = "None",
   strip.text = element_text(family = "roboto", size = 12, lineheight = 0.4),
   axis.title = element_blank(),
-  axis.text.x = element_text(family = "roboto", size = 9.5, face = "plain", lineheight = 0.4),
+  axis.text.x = element_text(family = "roboto", size = 10, face = "plain", lineheight = 0.4),
   axis.text.y = element_text(family = "roboto", size = 11, face = "plain", lineheight = 0.4),
   panel.grid.minor = element_blank(),
   panel.grid.major.y = element_line(linewidth = 0.2, color = "grey80"),

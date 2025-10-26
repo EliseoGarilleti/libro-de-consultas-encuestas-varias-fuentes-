@@ -158,7 +158,7 @@ resumen_edad_final <- ultimo_mes_edad %>%
       "El <b>PSOE</b> ocupa actualmente el <b>{ranking_psoe_ultimo}º puesto</b> ",
       "con un {perc_psoe_ultimo}%, y durante la mayor parte del periodo ha ocupado el ",
       "<b>{ranking_psoe_mas_frecuente}º puesto</b>.</li>"
-    )
+      )
   )
 ```
 
