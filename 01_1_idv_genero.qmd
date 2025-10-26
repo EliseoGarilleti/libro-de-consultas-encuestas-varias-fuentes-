@@ -1,5 +1,5 @@
 ---
-title: "1.1 Intención de voto por género"
+title: "Intención de voto por género"
 ---
 
 ```{r, include=FALSE}
@@ -53,7 +53,7 @@ p_idv_gndr <- ggplot(df_idv_gndr, aes(
       <span style='color:#F57BA4'><b>Sumar</b></span> y 
       <span style='color:#662D91'><b>Podemos</b></span>"
   ) +
-  theme_1
+  theme_2
 
 # Render interactivo
 if (knitr::is_html_output()) {

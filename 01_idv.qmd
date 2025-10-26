@@ -35,18 +35,20 @@ df_idv<-df %>%
 # ================================
 #   GRÁFICO INTERACTIVO ggiraph
 # ================================
-
 p_idv <- ggplot(df_idv, aes(
-  x = mes, y = perc, color = idv_group, group = idv_group,
-  tooltip = paste0("<b>", idv_group, "</b><br>",
-                   format(mes, "%B %Y", locale = "es_ES.UTF-8"), ": ",
-                   perc, "%")
+  x = mes, y = perc, color = idv_group, group = idv_group
 )) +
   geom_line_interactive(linewidth = .8) +
   geom_point_interactive(
-    data = ultimo_por_grupo(df_idv, idv_group, mes),
-    size = 3
-  ) +
+  aes(
+    tooltip = paste0(
+      "<b>", idv_group, "</b><br>",
+      format(mes, "%B %Y", locale = "es_ES.UTF-8"), ": ",
+      perc, "%"
+    )
+  ),
+  size = 2.5
+) +
   geom_hline(yintercept = 0, color = "black", linewidth = .2) +
   scale_x_date(labels = label_date("%b %y", locale = "es_ES")) +
   scale_color_manual(values = colores_partidos) +
