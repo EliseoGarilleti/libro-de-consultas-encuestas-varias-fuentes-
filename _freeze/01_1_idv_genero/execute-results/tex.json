@@ -1,0 +1,21 @@
+{
+  "hash": "8211fb948ac4c10fbc94ac58b284d414",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Intención de voto por género\"\n---\n\n\n\n\n\n\n::: {.cell}\n::: {.cell-output-display}\n![](figures/p_idv_genero_static.png){width=8in}\n:::\n:::\n\n\n<br>\n",
+    "supporting": [
+      "01_1_idv_genero_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {
+      "knitr": [
+        "{\"type\":\"list\",\"attributes\":{},\"value\":[]}"
+      ]
+    },
+    "preserve": null,
+    "postProcess": false
+  }
+}

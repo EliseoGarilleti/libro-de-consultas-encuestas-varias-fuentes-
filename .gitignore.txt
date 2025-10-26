@@ -1,0 +1,21 @@
+# --- Archivos del sistema ---
+.DS_Store
+.RData
+.Rhistory
+
+# --- Configuración de RStudio ---
+.Rproj.user/
+*.Rproj
+
+# --- Archivos temporales / cache ---
+*_cache/
+_freeze/
+output/
+site_libs/
+figures/*.png
+
+# --- Archivos locales de compilación ---
+*.log
+*.aux
+*.out
+*.toc
