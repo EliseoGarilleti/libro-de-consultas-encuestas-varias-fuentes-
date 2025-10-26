@@ -1,8 +1,8 @@
 {
-  "hash": "20d7d89a7ff494b20c3dbcf4fce76edd",
+  "hash": "938f70c5e512fbb8f4e4f5ac01e1ac85",
   "result": {
     "engine": "knitr",
-    "markdown": "---\ntitle: \"Intención de voto por género\"\n---\n\n\n\n\n\n\n::: {.cell}\n::: {.cell-output-display}\n![](figures/p_idv_genero_static.png){width=8in}\n:::\n:::\n\n\n<br>\n",
+    "markdown": "---\ntitle: \"Intención de voto por género\"\n---\n\n\n\n\n\n\n::: {.cell}\n::: {.cell-output-display}\n![](figures/p_idv_genero_static.png){width=8in}\n:::\n:::\n\n\n\n::: {.cell}\n\n:::\n\n\n\n<br><ul><li><b>Hombre</b>: en octubre de 2025, el partido con mayor intención de voto fue <b>Vox</b> con un 18%. El partido que más veces ha liderado el periodo es <b>PP</b>. El <b>PSOE</b> ocupa actualmente el <b>3º puesto</b> con un 17.2%, y durante la mayor parte del periodo ha ocupado el <b>2º puesto</b>.</li>\n<li><b>Mujer</b>: en octubre de 2025, el partido con mayor intención de voto fue <b>PSOE</b> con un 20.9%. El partido que más veces ha liderado el periodo es <b>PP</b>. El <b>PSOE</b> ocupa actualmente el <b>1º puesto</b> con un 20.9%, y durante la mayor parte del periodo ha ocupado el <b>2º puesto</b>.</li></ul>\n",
     "supporting": [
       "01_1_idv_genero_files"
     ],

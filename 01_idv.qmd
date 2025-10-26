@@ -135,13 +135,14 @@ resumen <- df_idv %>%
     ),
     texto = glue(
       "<li><b><span style='color:{color}'>{idv_group}</span></b>: ",
-      "En {format(mes_ini, '%B de %Y', locale='es_ES.UTF-8')} un {perc_ini}% afirmaba que les votaría, ",
-      "hoy lo hace un {perc_fin}%, una diferencia de {diff} puntos. ",
+      "En {format(mes_fin, '%B de %Y', locale='es_ES.UTF-8')} un {perc_fin}% afirma que les votará. ",
+      "En {format(mes_ini, '%B de %Y', locale='es_ES.UTF-8')} lo hacía un {perc_ini}%, una diferencia de {diff} puntos. ",
       "El dato más bajo fue {perc_min}% en {format(mes_min, '%B de %Y', locale='es_ES.UTF-8')}, ",
       "y el más alto {perc_max}% en {format(mes_max, '%B de %Y', locale='es_ES.UTF-8')}.</li>"
     )
   )
 ```
+
 
 ```{r, results='asis', echo=FALSE}
 cat("<br>")

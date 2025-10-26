@@ -75,7 +75,7 @@ p_idv_gndr <- ggplot(df_idv_gndr, aes(
   scale_color_manual(values = colores_partidos) +
   theme_minimal() +
   labs(
-    subtitle = "Evolución de la intención de voto según <b>género</b> para<br>
+    subtitle = "Intención de voto según <b>género</b> a
       <span style='color:#E3001B'><b>PSOE</b></span>, 
       <span style='color:#1d4184'><b>PP</b></span>, 
       <span style='color:#5BC035'><b>Vox</b></span>, 
@@ -105,6 +105,68 @@ if (knitr::is_html_output()) {
 }
 ```
 
+```{r, echo=FALSE}
+# ================================
+#   RESUMEN AUTOMÁTICO POR GÉNERO
+# ================================
+
+resumen_genero <- df_idv_gndr %>%
+  group_by(genero, mes) %>%
+  # Ranking por mes y género (1 = más intención de voto)
+  mutate(ranking = rank(-perc, ties.method = "first")) %>%
+  ungroup()
+
+# Último mes disponible por género
+ultimo_mes_genero <- resumen_genero %>%
+  group_by(genero) %>%
+  filter(mes == max(mes, na.rm = TRUE)) %>%
+  arrange(ranking) %>%
+  summarise(
+    mes_fin = unique(mes),
+    ganador_ultimo = first(idv_group),
+    perc_ganador_ultimo = first(perc),
+    ranking_psoe_ultimo = ranking[idv_group == "PSOE"],
+    perc_psoe_ultimo = perc[idv_group == "PSOE"]
+  )
+
+# Partido que más veces ha sido primero por género
+lider_historico <- resumen_genero %>%
+  filter(ranking == 1) %>%
+  count(genero, idv_group, name = "n_liderazgos") %>%
+  group_by(genero) %>%
+  slice_max(n_liderazgos, n = 1, with_ties = FALSE) %>%
+  rename(lider_historico = idv_group)
+
+# Posición más frecuente del PSOE
+ranking_psoe_frecuente <- resumen_genero %>%
+  filter(idv_group == "PSOE") %>%
+  count(genero, ranking, name = "frecuencia") %>%
+  group_by(genero) %>%
+  slice_max(frecuencia, n = 1, with_ties = FALSE) %>%
+  rename(ranking_psoe_mas_frecuente = ranking)
+
+# Unir toda la información
+resumen_genero_final <- ultimo_mes_genero %>%
+  left_join(lider_historico, by = "genero") %>%
+  left_join(ranking_psoe_frecuente, by = "genero") %>%
+  mutate(
+    texto = glue(
+      "<li><b>{genero}</b>: en {format(mes_fin, '%B de %Y', locale = 'es_ES.UTF-8')}, ",
+      "el partido con mayor intención de voto fue <b>{ganador_ultimo}</b> ",
+      "con un {perc_ganador_ultimo}%. ",
+      "El partido que más veces ha liderado el periodo es <b>{lider_historico}</b>. ",
+      "El <b>PSOE</b> ocupa actualmente el <b>{ranking_psoe_ultimo}º puesto</b> ",
+      "con un {perc_psoe_ultimo}%, y durante la mayor parte del periodo ha ocupado el ",
+      "<b>{ranking_psoe_mas_frecuente}º puesto</b>.</li>"
+    )
+  )
+```
+
+
 ```{r, results='asis', echo=FALSE}
+# Mostrar el resumen en HTML
 cat("<br>")
+cat("<ul>")
+cat(paste(resumen_genero_final$texto, collapse = "\n"))
+cat("</ul>")
 ```

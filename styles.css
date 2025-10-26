@@ -93,3 +93,15 @@ a:hover {
   font-weight: 300;
   color: #333;
 }
+
+/* === ESPACIADO ENTRE ELEMENTOS DE RESÚMENES AUTOMÁTICOS === */
+ul li {
+  margin-bottom: 0.8em;   /* separa los elementos de la lista */
+  line-height: 1.5;       /* mantiene legibilidad dentro de cada línea */
+}
+
+/* Si quieres que haya más espacio antes o después de toda la lista */
+ul {
+  margin-top: 1em;
+  margin-bottom: 1.5em;
+}

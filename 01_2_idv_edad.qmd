@@ -1,0 +1,173 @@
+---
+title: "Intención de voto por edad"
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, fig.path = "figures/")
+
+# Idioma para los meses
+locales <- c("es_ES.UTF-8", "Spanish_Spain.1252", "es_ES")
+for (loc in locales) {
+  res <- try(Sys.setlocale("LC_TIME", loc), silent = TRUE)
+  if (!inherits(res, "try-error") && !is.na(res)) break
+}
+
+# Cargar entorno y funciones
+source("code/00_setup.R")
+source("code/01_theme.R")
+source("code/02_datos.R")
+```
+
+```{r, include=FALSE}
+# Datos: IDV por género
+df_idv_edad <- df %>%
+  group_by(mes, edad_grupos, idv_group) %>%
+  tally(wt = ponde_mes_ajustada) %>%
+  mutate(perc = round(n / sum(n) * 100, 1)) %>%
+  filter(idv_group %in% c("PSOE", "PP", "Vox", "Sumar", "Podemos"))
+```
+
+```{r, echo=FALSE}
+# Gráfico interactivo con facet_wrap
+# ================================
+#   GRÁFICO INTERACTIVO ggiraph (por género)
+# ================================
+p_idv_edad <- ggplot(df_idv_edad, aes(
+  x = mes, y = perc, color = idv_group, group = idv_group
+)) +
+  # Línea sin tooltip (para evitar el error de tooltip único)
+  geom_line_interactive(
+    aes(tooltip = NA_character_),
+    linewidth = .5
+  ) +
+  
+  # Puntos invisibles — capturan el hover correcto por mes
+  geom_point_interactive(
+    data = df_idv_edad,
+    aes(
+      x = mes, y = perc, color = idv_group,
+      tooltip = paste0(
+        "<b>", idv_group, "</b><br>",
+        format(mes, "%B %Y", locale = "es_ES.UTF-8"), ": ",
+        perc, "%"
+      )
+    ),
+    size = 9, alpha = 0, stroke = 0, show.legend = FALSE, inherit.aes = FALSE
+  ) +
+  
+  # Último punto visible
+  geom_point_interactive(
+    data = ultimo_por_grupo(df_idv_edad, interaction(idv_group, edad_grupos), mes),
+    aes(
+      x = mes, y = perc, color = idv_group,
+      tooltip = paste0(
+        "<b>", idv_group, "</b><br>",
+        format(mes, "%B %Y", locale = "es_ES.UTF-8"), ": ",
+        perc, "%"
+      )
+    ),
+    size = 2, inherit.aes = FALSE
+  ) +
+  
+  geom_hline(yintercept = 0, color = "black", linewidth = .2) +
+  facet_wrap(~edad_grupos, ncol = 3) +
+  scale_x_date(labels = label_date("%b %y", locale = "es_ES")) +
+  scale_color_manual(values = colores_partidos) +
+  theme_minimal() +
+  labs(
+    subtitle = "Intención de voto según <b>edad</b> a
+      <span style='color:#E3001B'><b>PSOE</b></span>, 
+      <span style='color:#1d4184'><b>PP</b></span>, 
+      <span style='color:#5BC035'><b>Vox</b></span>, 
+      <span style='color:#F57BA4'><b>Sumar</b></span> y 
+      <span style='color:#662D91'><b>Podemos</b></span>"
+  ) +
+  theme_3
+
+# --- Render condicional ---
+if (knitr::is_html_output()) {
+  girafe(
+    ggobj = p_idv_edad,
+    options = list(
+      opts_hover(css = "stroke-width:3px;opacity:0.9;"),
+      opts_tooltip(css = "background:white;color:black;padding:6px;
+                            border-radius:6px;box-shadow:0px 1px 3px rgba(0,0,0,0.2);
+                            font-family:Roboto;font-size:13px;"),
+      opts_toolbar(saveaspng = TRUE)
+    )
+  )
+} else {
+  dir.create("figures", showWarnings = FALSE)
+  static_plot_path <- file.path("figures", "p_idv_edad_static.png")
+  ggsave(static_plot_path, plot = p_idv_edad, width = 8, height = 5, dpi = 300)
+  Sys.sleep(1)
+  knitr::include_graphics(static_plot_path)
+}
+```
+
+```{r, echo=FALSE}
+# ================================
+#   RESUMEN AUTOMÁTICO POR GRUPO DE EDAD
+# ================================
+
+resumen_edad <- df_idv_edad %>%
+  group_by(edad_grupos, mes) %>%
+  # Ranking por mes y edad (1 = más intención de voto)
+  mutate(ranking = rank(-perc, ties.method = "first")) %>%
+  ungroup()
+
+# Último mes disponible por grupo de edad
+ultimo_mes_edad <- resumen_edad %>%
+  group_by(edad_grupos) %>%
+  filter(mes == max(mes, na.rm = TRUE)) %>%
+  arrange(ranking) %>%
+  summarise(
+    mes_fin = unique(mes),
+    ganador_ultimo = first(idv_group),
+    perc_ganador_ultimo = first(perc),
+    ranking_psoe_ultimo = ranking[idv_group == "PSOE"],
+    perc_psoe_ultimo = perc[idv_group == "PSOE"]
+  )
+
+# Partido que más veces ha sido primero por grupo de edad
+lider_historico_edad <- resumen_edad %>%
+  filter(ranking == 1) %>%
+  count(edad_grupos, idv_group, name = "n_liderazgos") %>%
+  group_by(edad_grupos) %>%
+  slice_max(n_liderazgos, n = 1, with_ties = FALSE) %>%
+  rename(lider_historico = idv_group)
+
+# Posición más frecuente del PSOE
+ranking_psoe_frecuente_edad <- resumen_edad %>%
+  filter(idv_group == "PSOE") %>%
+  count(edad_grupos, ranking, name = "frecuencia") %>%
+  group_by(edad_grupos) %>%
+  slice_max(frecuencia, n = 1, with_ties = FALSE) %>%
+  rename(ranking_psoe_mas_frecuente = ranking)
+
+# Unir toda la información
+resumen_edad_final <- ultimo_mes_edad %>%
+  left_join(lider_historico_edad, by = "edad_grupos") %>%
+  left_join(ranking_psoe_frecuente_edad, by = "edad_grupos") %>%
+  mutate(
+    texto = glue(
+      "<li><b>{edad_grupos}</b>: en {format(mes_fin, '%B de %Y', locale = 'es_ES.UTF-8')}, ",
+      "el partido con mayor intención de voto fue <b>{ganador_ultimo}</b> ",
+      "con un {perc_ganador_ultimo}%. ",
+      "El partido que más veces ha liderado el periodo es <b>{lider_historico}</b>. ",
+      "El <b>PSOE</b> ocupa actualmente el <b>{ranking_psoe_ultimo}º puesto</b> ",
+      "con un {perc_psoe_ultimo}%, y durante la mayor parte del periodo ha ocupado el ",
+      "<b>{ranking_psoe_mas_frecuente}º puesto</b>.</li>"
+    )
+  )
+```
+
+
+```{r, results='asis', echo=FALSE}
+# Mostrar el resumen en HTML
+cat("<br>")
+cat("<ul>")
+cat(paste(resumen_edad_final$texto, collapse = "\n"))
+cat("</ul>")
+```
+
