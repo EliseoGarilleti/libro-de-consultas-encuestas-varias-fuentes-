@@ -82,14 +82,3 @@ table {
     margin-top: 0.3em;
   }
 }
-
-/* === ESPACIADO ADICIONAL === */
-p {
-  margin-bottom: 1.2em;
-}
-
-/* Añadir un poco de separación vertical entre gráficos y texto */
-.girafe, img, svg {
-  margin-top: 0.8em;
-  margin-bottom: 1.5em;
-}
