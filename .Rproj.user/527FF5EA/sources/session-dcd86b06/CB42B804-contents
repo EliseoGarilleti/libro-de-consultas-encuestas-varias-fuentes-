@@ -1,0 +1,1273 @@
+library(tidyverse)
+library(showtext)
+library(ggtext)
+library(flextable)
+library(officer)
+library(scales)
+
+font_add_google("Roboto", "roboto")
+# Añadir los estilos específicos
+font_add_google("Roboto", "roboto-light", regular.wt = 300)
+font_add_google("Roboto", "roboto-medium", regular.wt = 500)
+showtext_auto()
+
+df <- readRDS("data/00_longitudinal/longitudinal_varias_encuestas_final.RDS")
+
+
+ft_1<-df %>%
+  filter(mes >= as.Date("2023-09-01")) %>%
+  group_by(mes, genero, idv_group) %>%
+  tally(wt = ponde_mes_ajustada) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_group == "PSOE") %>%
+  group_by(genero) %>%
+  slice_max(perc, n = 1, with_ties = FALSE) %>%
+  select(-idv_group, -n) %>%
+  rename("Género" = genero, "Máximo" = perc)
+
+ft_2<-df %>%
+  filter(mes >= as.Date("2023-09-01")) %>%
+  group_by(mes, genero, idv_group) %>%
+  tally(wt = ponde_mes_ajustada) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_group == "PSOE") %>%
+  group_by(genero) %>%
+  slice_min(perc, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  select(-idv_group, -n, -mes, -genero) %>%
+  rename("Mínimo" = perc)
+
+ft_3<-df %>%
+  filter(mes == as.Date("2025-10-01")) %>%
+  group_by(mes, genero, idv_group) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_group == "PSOE") %>%
+  group_by(genero) %>%
+  slice_min(perc, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  select(-idv_group, -n, -mes, -genero) %>%
+  rename("Octubre" = perc)
+
+
+ft<-bind_cols(ft_1, ft_2, ft_3)
+
+ft<-ft %>%
+  select(-mes)
+
+ft<-ft %>%
+  flextable() %>%
+  add_header_lines("IDV al PSOE") %>%
+  theme_vanilla() %>%
+  autofit() %>%
+  align(align = "center", part = "all") %>%
+  align(j = 1, align = "left", part = "all") %>%
+  bold(part = "header") %>%
+  bold(part = "header", i = 1) %>%     # título en negrita
+  fontsize(size = 11, part = "all") %>%
+  border_remove() %>%
+  colformat_num(big.mark = ".", decimal.mark = ",") %>%
+  hline_top(border = fp_border(color = "black", width = 1)) %>%
+  hline_bottom(border = fp_border(color = "black", width = 1))
+
+save_as_image(ft, "output/maxima_idv.png", res = 500)
+
+
+# Variación IDV PSOE con respecto a septiembre 2023 (todas las fuentes)
+variacion_gnral<-df %>%
+  filter(mes >= as.Date("2023-09-01")) %>%
+  group_by(mes, genero, idv_recod) %>%
+  tally(wt = ponde_mes_ajustada) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  mutate(max_perc = max(perc, na.rm = TRUE),
+         variacion = perc - max_perc) %>%
+  ungroup()
+
+# Gráfico
+variacion_gnral %>%
+  ggplot(aes(x = mes, y = variacion, color = genero)) +
+  geom_line(linewidth = .8) +
+  geom_point(data = . %>% filter(mes == max(mes)),size = 3) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_vline(xintercept = as.Date("2025-07-01"), linetype = "dotted", color = "black") +
+  annotate("text", x = as.Date("2025-07-01") + 8, y = -1,
+           label = "Caso Cerdán", family = "roboto-light",
+           hjust = 0, size = 13) +
+  scale_color_manual(values = c("#5398BE", "#EE7674")) +
+  scale_y_continuous(breaks = seq(0, -10, -2), limits = c(0, -11)) +
+  theme_minimal() +
+  theme(
+    panel.spacing.y = unit(0.8, "lines"),
+    panel.spacing.x = unit(2.5, "lines"),
+    legend.position = "None",
+    strip.text = element_text(family = "roboto", size = 32, lineheight = 0.4),
+    axis.title = element_blank(),
+    axis.text.x = element_text(family = "roboto", size = 36, face = "plain", lineheight = 0.4),
+    axis.text.y = element_text(family = "roboto", size = 36, face = "plain", lineheight = 0.4),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.2, color = "grey80"),
+    plot.title = element_text(family = "roboto-medium", size = 42, lineheight = 0.3, face = "bold"),
+    plot.subtitle = element_markdown(family = "roboto-light", size = 44, lineheight = 0.4, color = "gray10", face = "plain", margin = margin(b = 15)),
+    plot.caption = element_text(family = "roboto-light", size = 30, lineheight = 0.3, color = "gray10", face = "plain"),
+    plot.margin = margin(t = 20, r = 15, b = 15, l = 15)) +
+  labs(subtitle = "Variación de la IDV al PSOE desde septiembre de 2023 entre <span style='color:#5398BE'><b>hombres</b></span> y <span style='color:#EE7674'><b>mujeres</b></span>")
+
+ggsave("output/variacion_idv_psoe.jpeg", width = 20, height = 13, dpi = 300, units = "cm")
+
+
+ft_0<-df %>%
+  filter(mes == as.Date("2023-09-01")) %>%
+  group_by(mes, genero, edad_grupos, recuerdo_recod) %>%
+  tally(wt = ponde_mes_ajustada) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(recuerdo_recod == "PSOE") %>%
+  ungroup() %>%
+  filter(genero == "Mujer") %>%
+  select(edad_grupos, "recuerdo"=perc)
+
+ft_1<-df %>%
+  filter(mes >= as.Date("2023-09-01")) %>%
+  group_by(mes, genero, edad_grupos, idv_recod) %>%
+  tally(wt = ponde_mes_ajustada) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  ungroup() %>%
+  filter(genero == "Mujer") %>%
+  group_by(edad_grupos) %>%
+  slice_max(perc, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  select("max"=perc)
+
+ft_2<-df %>%
+  filter(mes >= as.Date("2023-09-01")) %>%
+  group_by(mes, genero, edad_grupos, idv_recod) %>%
+  tally(wt = ponde_mes_ajustada) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  ungroup() %>%
+  filter(genero == "Mujer") %>%
+  group_by(edad_grupos) %>%
+  slice_min(perc, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  select("min"=perc)
+
+ft_3<-df %>%
+  filter(mes == as.Date("2025-10-01")) %>%
+  group_by(mes, genero, edad_grupos, idv_recod) %>%
+  tally(wt = ponde_mes_ajustada) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  ungroup() %>%
+  filter(genero == "Mujer") %>%
+  group_by(edad_grupos) %>%
+  ungroup() %>%
+  select("octubre"=perc)
+
+ft<-bind_cols(ft_0, ft_1, ft_2, ft_3)
+
+ft <- ft %>%
+  mutate(diff = max - min,
+         diff_pct = ((min - max) / max) * 100,
+         diff_pct = round(diff_pct, 1)) %>%
+  select(1:4,6,7,5)
+
+ft <- ft %>%
+  mutate(
+    color_dif = col_numeric(
+      palette = c("#FFD1D1", "#F03758"),
+      domain = range(diff, na.rm = TRUE))(diff),
+
+    color_dif_pct = col_numeric(
+      palette = c("#FFD1D1", "#F03758"),
+      domain = range(diff_pct, na.rm = TRUE))(diff_pct))
+
+# aplicar color y eliminar la variable antes de flextable()
+color_dif_vec <- ft$color_dif
+ft <- ft %>% select(-color_dif, -color_dif_pct)
+
+ft <- ft %>%
+  flextable() %>%
+  add_header_lines("Evolución de apoyo al PSOE entre mujeres de distintas edades") %>%
+  set_header_labels(
+    edad_grupos = "Edad",
+    recuerdo = "Recuerdo 23J",
+    max = "IDV max",
+    min = "IDV min",
+    diff = "Diferencia",
+    diff_pct = "Cambio porcentual",
+    octubre = "Ultimo dato"
+  ) %>%
+  theme_vanilla() %>%
+  autofit() %>%
+  align(align = "center", part = "all") %>%
+  align(j = 1, align = "left", part = "all") %>%
+  bold(part = "header") %>%
+  bold(part = "header", i = 1) %>%
+  fontsize(size = 11, part = "all") %>%
+  border_remove() %>%
+  colformat_num(big.mark = ".", decimal.mark = ",") %>%
+  hline_top(border = fp_border(color = "black", width = 1)) %>%
+  hline_bottom(border = fp_border(color = "black", width = 1))
+#bg(j = "diff", bg = color_dif_vec) %>%
+#bg(j = "diff_pct", bg = color_dif_vec)
+
+save_as_image(ft, "output/idv_psoe_mujeres_edad.png", res = 500)
+
+df %>%
+  filter(mes == as.Date("2023-09-01") | mes == as.Date("2025-09-01")) %>%
+  group_by(mes, genero, edad_grupos, idv_recod) %>%
+  tally(wt = ponde_mes_ajustada) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  ungroup() %>%
+  #filter(genero == "Mujer") %>%
+  ggplot(aes(x = mes, y = perc, color = genero)) +
+  geom_line(linewidth = .8) +
+  geom_point(data = . %>% filter(mes == "2025-10-01"),size = 3) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_color_manual(values = c("#5398BE", "#EE7674")) +
+  theme_minimal() +
+  facet_wrap(~edad_grupos)
+
+df_gnr_ed<-df %>%
+  filter(mes == as.Date("2023-09-01") | mes == as.Date("2025-10-01")) %>%
+  group_by(mes, genero, edad_grupos, idv_recod) %>%
+  tally(wt = ponde_mes_ajustada) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  ungroup()
+
+
+g_1<-df_gnr_ed %>%
+  filter(edad_grupos == "18-24") %>%
+  ggplot(aes(x = mes, y = perc, color = genero, fill = genero)) +
+  geom_ribbon(aes(ymin = 0, ymax = perc), alpha = 0.2, colour = NA) +
+  geom_line(linewidth = .8) +
+  geom_hline(yintercept = 0) +
+  scale_color_manual(values = c("#5398BE", "#EE7674")) +
+  scale_fill_manual(values = c("#5398BE", "#EE7674")) +
+  scale_y_continuous(breaks = seq(0, 30, 10), limits = c(0, 35)) +
+  scale_x_date(
+    breaks = c(min(df_gnr_ed$mes), max(df_gnr_ed$mes)),
+    labels = scales::date_format("%b %y")) +
+  theme_minimal() +
+  facet_wrap(~genero) +
+  theme(
+    panel.spacing.y = unit(0.8, "lines"),
+    panel.spacing.x = unit(2.5, "lines"),
+    legend.position = "None",
+    strip.text = element_text(family = "roboto", size = 28, lineheight = 0.4),
+    axis.title = element_blank(),
+    axis.text.x = element_text(family = "roboto", size = 26, face = "plain", lineheight = 0.4),
+    axis.text.y = element_text(family = "roboto", size = 26, face = "plain", lineheight = 0.4),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.2, color = "grey80"),
+    plot.title = element_text(family = "roboto-medium", size = 42, lineheight = 0.3, face = "bold"),
+    plot.subtitle = element_markdown(family = "roboto-medium", size = 28, lineheight = 0.4, color = "gray10", face = "plain", margin = margin(b = 0), hjust = 0.5),
+    plot.caption = element_text(family = "roboto-light", size = 30, lineheight = 0.3, color = "gray10", face = "plain"),
+    plot.margin = margin(t = 15, r = 15, b = 15, l = 15))  +
+  labs(subtitle = "18-24 años")
+
+g_2<-df_gnr_ed %>%
+  filter(edad_grupos == "25-34") %>%
+  ggplot(aes(x = mes, y = perc, color = genero, fill = genero)) +
+  geom_ribbon(aes(ymin = 0, ymax = perc), alpha = 0.2, colour = NA) +
+  geom_line(linewidth = .8) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_color_manual(values = c("#5398BE", "#EE7674")) +
+  scale_fill_manual(values = c("#5398BE", "#EE7674")) +
+  scale_y_continuous(breaks = seq(0, 30, 10), limits = c(0, 35)) +
+  scale_x_date(
+    breaks = c(min(df_gnr_ed$mes), max(df_gnr_ed$mes)),
+    labels = scales::date_format("%b %y")) +
+  theme_minimal() +
+  facet_wrap(~genero) +
+  theme(
+    panel.spacing.y = unit(0.8, "lines"),
+    panel.spacing.x = unit(2.5, "lines"),
+    legend.position = "None",
+    strip.text = element_text(family = "roboto", size = 28, lineheight = 0.4),
+    axis.title = element_blank(),
+    axis.text.x = element_text(family = "roboto", size = 26, face = "plain", lineheight = 0.4),
+    axis.text.y = element_text(family = "roboto", size = 26, face = "plain", lineheight = 0.4),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.2, color = "grey80"),
+    plot.title = element_text(family = "roboto-medium", size = 42, lineheight = 0.3, face = "bold"),
+    plot.subtitle = element_markdown(family = "roboto-medium", size = 28, lineheight = 0.4, color = "gray10", face = "plain", margin = margin(b = 0), hjust = 0.5),
+    plot.caption = element_text(family = "roboto-light", size = 30, lineheight = 0.3, color = "gray10", face = "plain"),
+    plot.margin = margin(t = 15, r = 15, b = 15, l = 15))  +
+  labs(subtitle = "25-34 años")
+
+g_3<-df_gnr_ed %>%
+  filter(edad_grupos == "35-44") %>%
+  ggplot(aes(x = mes, y = perc, color = genero, fill = genero)) +
+  geom_ribbon(aes(ymin = 0, ymax = perc), alpha = 0.2, colour = NA) +
+  geom_line(linewidth = .8) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_color_manual(values = c("#5398BE", "#EE7674")) +
+  scale_fill_manual(values = c("#5398BE", "#EE7674")) +
+  scale_y_continuous(breaks = seq(0, 30, 10), limits = c(0, 35)) +
+  scale_x_date(
+    breaks = c(min(df_gnr_ed$mes), max(df_gnr_ed$mes)),
+    labels = scales::date_format("%b %y")) +
+  theme_minimal() +
+  facet_wrap(~genero) +
+  theme(
+    panel.spacing.y = unit(0.8, "lines"),
+    panel.spacing.x = unit(2.5, "lines"),
+    legend.position = "None",
+    strip.text = element_text(family = "roboto", size = 28, lineheight = 0.4),
+    axis.title = element_blank(),
+    axis.text.x = element_text(family = "roboto", size = 26, face = "plain", lineheight = 0.4),
+    axis.text.y = element_text(family = "roboto", size = 26, face = "plain", lineheight = 0.4),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.2, color = "grey80"),
+    plot.title = element_text(family = "roboto-medium", size = 42, lineheight = 0.3, face = "bold"),
+    plot.subtitle = element_markdown(family = "roboto-medium", size = 28, lineheight = 0.4, color = "gray10", face = "plain", margin = margin(b = 0), hjust = 0.5),
+    plot.caption = element_text(family = "roboto-light", size = 30, lineheight = 0.3, color = "gray10", face = "plain"),
+    plot.margin = margin(t = 15, r = 15, b = 15, l = 15))  +
+  labs(subtitle = "35-44 años")
+
+g_4<-df_gnr_ed %>%
+  filter(edad_grupos == "45-54") %>%
+  ggplot(aes(x = mes, y = perc, color = genero, fill = genero)) +
+  geom_ribbon(aes(ymin = 0, ymax = perc), alpha = 0.2, colour = NA) +
+  geom_line(linewidth = .8) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_color_manual(values = c("#5398BE", "#EE7674")) +
+  scale_fill_manual(values = c("#5398BE", "#EE7674")) +
+  scale_y_continuous(breaks = seq(0, 30, 10), limits = c(0, 35)) +
+  scale_x_date(
+    breaks = c(min(df_gnr_ed$mes), max(df_gnr_ed$mes)),
+    labels = scales::date_format("%b %y")) +
+  theme_minimal() +
+  facet_wrap(~genero) +
+  theme(
+    panel.spacing.y = unit(0.8, "lines"),
+    panel.spacing.x = unit(2.5, "lines"),
+    legend.position = "None",
+    strip.text = element_text(family = "roboto", size = 28, lineheight = 0.4),
+    axis.title = element_blank(),
+    axis.text.x = element_text(family = "roboto", size = 26, face = "plain", lineheight = 0.4),
+    axis.text.y = element_text(family = "roboto", size = 26, face = "plain", lineheight = 0.4),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.2, color = "grey80"),
+    plot.title = element_text(family = "roboto-medium", size = 42, lineheight = 0.3, face = "bold"),
+    plot.subtitle = element_markdown(family = "roboto-medium", size = 28, lineheight = 0.4, color = "gray10", face = "plain", margin = margin(b = 0), hjust = 0.5),
+    plot.caption = element_text(family = "roboto-light", size = 30, lineheight = 0.3, color = "gray10", face = "plain"),
+    plot.margin = margin(t = 15, r = 15, b = 15, l = 15))  +
+  labs(subtitle = "45-54 años")
+
+g_5<-df_gnr_ed %>%
+  filter(edad_grupos == "55-64") %>%
+  ggplot(aes(x = mes, y = perc, color = genero, fill = genero)) +
+  geom_ribbon(aes(ymin = 0, ymax = perc), alpha = 0.2, colour = NA) +
+  geom_line(linewidth = .8) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_color_manual(values = c("#5398BE", "#EE7674")) +
+  scale_fill_manual(values = c("#5398BE", "#EE7674")) +
+  scale_y_continuous(breaks = seq(0, 30, 10), limits = c(0, 35)) +
+  scale_x_date(
+    breaks = c(min(df_gnr_ed$mes), max(df_gnr_ed$mes)),
+    labels = scales::date_format("%b %y")) +
+  theme_minimal() +
+  facet_wrap(~genero) +
+  theme(
+    panel.spacing.y = unit(0.8, "lines"),
+    panel.spacing.x = unit(2.5, "lines"),
+    legend.position = "None",
+    strip.text = element_text(family = "roboto", size = 28, lineheight = 0.4),
+    axis.title = element_blank(),
+    axis.text.x = element_text(family = "roboto", size = 26, face = "plain", lineheight = 0.4),
+    axis.text.y = element_text(family = "roboto", size = 26, face = "plain", lineheight = 0.4),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.2, color = "grey80"),
+    plot.title = element_text(family = "roboto-medium", size = 42, lineheight = 0.3, face = "bold"),
+    plot.subtitle = element_markdown(family = "roboto-medium", size = 28, lineheight = 0.4, color = "gray10", face = "plain", margin = margin(b = 0), hjust = 0.5),
+    plot.caption = element_text(family = "roboto-light", size = 30, lineheight = 0.3, color = "gray10", face = "plain"),
+    plot.margin = margin(t = 15, r = 15, b = 15, l = 15))  +
+  labs(subtitle = "55-64 años")
+
+g_6<-df_gnr_ed %>%
+  filter(edad_grupos == "65+") %>%
+  ggplot(aes(x = mes, y = perc, color = genero, fill = genero)) +
+  geom_ribbon(aes(ymin = 0, ymax = perc), alpha = 0.2, colour = NA) +
+  geom_line(linewidth = .8) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_color_manual(values = c("#5398BE", "#EE7674")) +
+  scale_fill_manual(values = c("#5398BE", "#EE7674")) +
+  scale_y_continuous(breaks = seq(0, 30, 10), limits = c(0, 35)) +
+  scale_x_date(
+    breaks = c(min(df_gnr_ed$mes), max(df_gnr_ed$mes)),
+    labels = scales::date_format("%b %y")) +
+  theme_minimal() +
+  facet_wrap(~genero) +
+  theme(
+    panel.spacing.y = unit(0.8, "lines"),
+    panel.spacing.x = unit(2.5, "lines"),
+    legend.position = "None",
+    strip.text = element_text(family = "roboto", size = 28, lineheight = 0.4),
+    axis.title = element_blank(),
+    axis.text.x = element_text(family = "roboto", size = 26, face = "plain", lineheight = 0.4),
+    axis.text.y = element_text(family = "roboto", size = 26, face = "plain", lineheight = 0.4),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.2, color = "grey80"),
+    plot.title = element_text(family = "roboto-medium", size = 42, lineheight = 0.3, face = "bold"),
+    plot.subtitle = element_markdown(family = "roboto-medium", size = 28, lineheight = 0.4, color = "gray10", face = "plain", margin = margin(b = 0), hjust = 0.5),
+    plot.caption = element_text(family = "roboto-light", size = 30, lineheight = 0.3, color = "gray10", face = "plain"),
+    plot.margin = margin(t = 15, r = 15, b = 15, l = 15))  +
+  labs(subtitle = "65+ años")
+
+library(patchwork)
+
+(g_1+g_2)/(g_3 + g_4)/(g_5+g_6)
+
+ggsave("output/genero_edad_idv.jpeg", width = 14, height = 18, dpi = 300, units = "cm")
+
+# IDV PSOE
+idv_gnral_psoe<-df %>%
+  filter(mes >= as.Date("2023-09-01")) %>%
+  group_by(mes, genero, idv_recod) %>%
+  tally(wt = ponde_mes_ajustada) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE")
+
+idv_gnral_psoe %>%
+  ggplot(aes(x = mes, y = perc, color = genero)) +
+  geom_line(linewidth = .8) +
+  geom_point(data = . %>% filter(mes == "2025-10-01"),size = 3) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_color_manual(values = c("#5398BE", "#EE7674")) +
+  geom_vline(xintercept = as.Date("2025-07-01"), linetype = "dotted", color = "black") +
+  annotate("text", x = as.Date("2025-07-01") + 8, y = 25,
+           label = "Caso Cerdán", family = "roboto-light",
+           hjust = 0, size = 13) +
+  scale_y_continuous(breaks = seq(0, 25, 5), limits = c(0, 27)) +
+  theme_minimal() +
+  theme(
+    panel.spacing.y = unit(0.8, "lines"),
+    panel.spacing.x = unit(2.5, "lines"),
+    legend.position = "None",
+    strip.text = element_text(family = "roboto", size = 32, lineheight = 0.4),
+    axis.title = element_blank(),
+    axis.text.x = element_text(family = "roboto", size = 36, face = "plain", lineheight = 0.4),
+    axis.text.y = element_text(family = "roboto", size = 36, face = "plain", lineheight = 0.4),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.2, color = "grey80"),
+    plot.title = element_text(family = "roboto-medium", size = 42, lineheight = 0.3, face = "bold"),
+    plot.subtitle = element_markdown(family = "roboto-light", size = 44, lineheight = 0.4, color = "gray10", face = "plain", margin = margin(b = 15)),
+    plot.caption = element_text(family = "roboto-light", size = 30, lineheight = 0.3, color = "gray10", face = "plain"),
+    plot.margin = margin(t = 20, r = 15, b = 15, l = 15)) +
+  labs(subtitle = "IDV al PSOE desde septiembre de 2023 entre <span style='color:#5398BE'><b>hombres</b></span> y <span style='color:#EE7674'><b>mujeres</b></span>")
+
+ggsave("output/idv_psoe.jpeg", width = 20, height = 13, dpi = 300, units = "cm")
+
+
+
+
+# Máxima IDV al PSOE entre hombres y mujeres (CIS)
+## Usando nuestro peso
+df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  filter(fuente == "cis") %>%
+  group_by(fecha, genero, idv_group) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_group == "PSOE") %>%
+  group_by(genero) %>%
+  slice_max(perc, n = 1, with_ties = FALSE) %>%
+  select(-idv_group, -n)
+
+## Usando el peso del CIS
+df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  filter(fuente == "cis") %>%
+  group_by(fecha, genero, idv_group) %>%
+  tally(wt = ponde) %>%
+  mutate(perc = n / sum(n)) %>%
+  filter(idv_group == "PSOE") %>%
+  group_by(genero) %>%
+  slice_max(perc, n = 1, with_ties = FALSE)
+
+# Máxima IDV al PSOE entre hombres y mujeres (40_db)
+## Usando nuestro peso
+df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  filter(fuente == "40_db") %>%
+  group_by(fecha, genero, idv_group) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = n / sum(n)) %>%
+  filter(idv_group == "PSOE") %>%
+  group_by(genero) %>%
+  slice_max(perc, n = 1, with_ties = FALSE)
+
+## Usando el peso de 40_db
+df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  filter(fuente == "40_db") %>%
+  group_by(fecha, genero, idv_group) %>%
+  tally(wt = ponde) %>%
+  mutate(perc = n / sum(n)) %>%
+  filter(idv_group == "PSOE") %>%
+  group_by(genero) %>%
+  slice_max(perc, n = 1, with_ties = FALSE)
+
+# Como ajusta cada peso el recuerdo de voto en cada estudio donde se dan valores máximos
+# CIS (ponde propia)
+df %>%
+  filter(fecha == as.Date("2023-09-05")) %>%
+  filter(fuente == "cis") %>%
+  group_by(recuerdo_pond) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = n / sum(n)) %>%
+  select(-n)
+
+# CIS (ponde CIS)
+df %>%
+  filter(fecha == as.Date("2023-09-05")) %>%
+  filter(fuente == "cis") %>%
+  group_by(recuerdo_pond) %>%
+  tally(wt = ponde) %>%
+  mutate(perc = n / sum(n)) %>%
+  select(-n)
+
+# 40db (ponde propia)
+df %>%
+  filter(fecha == as.Date("2023-09-01")) %>%
+  filter(fuente == "40_db") %>%
+  group_by(recuerdo_pond) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = n / sum(n)) %>%
+  select(-n)
+
+# 40db (ponde 40db)
+df %>%
+  filter(fecha == as.Date("2023-09-01")) %>%
+  filter(fuente == "40_db") %>%
+  group_by(recuerdo_pond) %>%
+  tally(wt = ponde) %>%
+  mutate(perc = n / sum(n)) %>%
+  select(-n)
+
+# Los pesos de 40db y el CIS sobrerrepresentan a la izquierda.
+# Aplicandolos, el recuerdo de voto a la izquierda es en torno a 10 punto superior que el resultado real
+# En el CIS el voto a la derecha es en torno a 2 puntos inferior, en 40db en torno a 1 punto superior
+# Todo ello fijandonos en los estudios de septiembre de 2023 de ambas fuentes
+# Estos estudios son los que muestran máxima IDV al PSOE (excepto en hombres en 40db, que fue en diciembre 2024)
+
+
+# Máxima IDV al PSOE entre hombres y mujeres (por estudio)
+df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  group_by(fuente, fecha, genero, idv_group) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = n / sum(n)) %>%
+  filter(idv_group == "PSOE") %>%
+  group_by(genero) %>%
+  slice_max(perc, n = 1, with_ties = FALSE)
+
+# Variación IDV PSOE con respecto a septiembre 2023 (CIS)
+variacion_cis<-df %>%
+  filter(fuente %in% c("cis")) %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  mutate(fecha_mes = as.Date(format(fecha, "%Y-%m-01"))) %>%
+  group_by(fecha, fuente, genero, idv_recod) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  mutate(max_perc = max(perc, na.rm = TRUE),
+         variacion = perc - max_perc) %>%
+  ungroup()
+
+# Gráfico
+a<-variacion_cis %>%
+  ggplot(aes(x = fecha, y = variacion, color = genero)) +
+  geom_line() +
+  geom_point(data = . %>% filter(fecha == max(fecha)),size = 2) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_vline(xintercept = as.Date("2025-07-05"), linetype = "dotted", color = "black") +
+  annotate("text", x = as.Date("2025-07-05") + 8, y = -1, label = "Caso Cerdán", hjust = 0, size = 3.5) +
+  scale_color_manual(values = c("#5398BE", "#EE7674")) +
+  scale_y_continuous(breaks = seq(0, -10, -2), limits = c(0, -10)) +
+  theme_minimal() %>%
+  theme(legend.position = "none")
+
+
+# Variación IDV PSOE con respecto a septiembre 2023 (40db)
+variacion_40db<-df %>%
+  filter(fuente %in% c("40_db")) %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  mutate(fecha_mes = as.Date(format(fecha, "%Y-%m-01"))) %>%
+  group_by(fecha, fuente, genero, idv_recod) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  mutate(max_perc = max(perc, na.rm = TRUE),
+         variacion = perc - max_perc) %>%
+  ungroup()
+
+# Gráfico
+b<-variacion_40db %>%
+  ggplot(aes(x = fecha, y = variacion, color = genero)) +
+  geom_line() +
+  geom_point(data = . %>% filter(fecha == max(fecha)),size = 2) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_vline(xintercept = as.Date("2025-07-01"), linetype = "dotted", color = "black") +
+  annotate("text", x = as.Date("2025-07-01") + 8, y = -1, label = "Caso Cerdán", hjust = 0, size = 3.5) +
+  scale_color_manual(values = c("#5398BE", "#EE7674")) +
+  scale_y_continuous(breaks = seq(0, -10, -2), limits = c(0, -10)) +
+  theme_minimal() %>%
+  theme(legend.position = "none")
+
+
+
+
+
+
+
+
+ft_0<-df %>%
+  filter(mes == as.Date("2023-09-01")) %>%
+  filter(fuente == "cis") %>%
+  group_by(genero, edad_grupos, recuerdo_recod) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(recuerdo_recod == "PSOE") %>%
+  ungroup() %>%
+  filter(genero == "Mujer") %>%
+  select(edad_grupos, "recuerdo"=perc)
+
+df %>%
+  filter(mes == as.Date("2023-09-01")) %>%
+  filter(fuente == "40_db") %>%
+  group_by(genero, edad_grupos, recuerdo_recod) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(recuerdo_recod == "PSOE") %>%
+  ungroup() %>%
+  filter(genero == "Mujer") %>%
+  select(edad_grupos, "recuerdo"=perc)
+
+df %>%
+  filter(mes == as.Date("2023-09-01")) %>%
+  filter(fuente == "cis") %>%
+  group_by(genero, edad_grupos, idv_recod) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  ungroup() %>%
+  filter(genero == "Mujer")
+
+df %>%
+  filter(mes == as.Date("2023-09-01")) %>%
+  filter(fuente == "40_db") %>%
+  group_by(genero, edad_grupos, idv_recod) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  ungroup() %>%
+  filter(genero == "Mujer")
+
+df %>%
+  filter(mes == as.Date("2023-09-01")) %>%
+  filter(fuente == "40_db") %>%
+  group_by(genero, edad_grupos, recuerdo_recod) %>%
+  tally(wt = ponde) %>%
+  filter(recuerdo_recod == "PSOE") %>%
+  filter(genero == "Mujer")
+
+df %>%
+  filter(mes == as.Date("2023-09-01")) %>%
+  filter(fuente == "40_db") %>%
+  group_by(genero, edad_grupos) %>%
+  summarise(n=n())
+
+df %>%
+  filter(mes == as.Date("2023-09-01")) %>%
+  filter(fuente == "40_db") %>%
+  group_by(genero, edad_grupos, recuerdo_recod) %>%
+  summarise(n=n()) %>%
+  filter(recuerdo_recod == "PSOE")
+
+df %>%
+  filter(mes == as.Date("2023-09-01")) %>%
+  filter(fuente == "cis") %>%
+  group_by(genero, edad_grupos) %>%
+  summarise(n=n())
+
+df %>%
+  filter(mes == as.Date("2023-09-01")) %>%
+  filter(fuente == "cis") %>%
+  group_by(genero, edad_grupos, recuerdo_recod) %>%
+  summarise(n=n()) %>%
+  filter(recuerdo_recod == "PSOE")
+
+
+
+
+ft_1<-df %>%
+  filter(mes >= as.Date("2023-09-01")) %>%
+  group_by(mes, genero, edad_grupos, idv_recod) %>%
+  tally(wt = ponde_mes) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  ungroup() %>%
+  filter(genero == "Mujer") %>%
+  group_by(edad_grupos) %>%
+  slice_max(perc, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  select("max"=perc)
+
+ft_1<-df %>%
+  filter(mes >= as.Date("2023-09-01")) %>%
+  filter(fuente == "cis") %>%
+  group_by(mes, genero, edad_grupos, idv_recod) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  ungroup() %>%
+  filter(genero == "Mujer") %>%
+  group_by(edad_grupos) %>%
+  slice_max(perc, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  select("max"=perc)
+
+ft_2<-df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  group_by(mes, genero, edad_grupos, idv_recod) %>%
+  tally(wt = ponde_mes) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  ungroup() %>%
+  filter(genero == "Mujer") %>%
+  group_by(edad_grupos) %>%
+  slice_min(perc, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  select("min"=perc)
+
+ft_2<-df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  filter(fuente == "cis") %>%
+  group_by(mes, genero, edad_grupos, idv_recod) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  ungroup() %>%
+  filter(genero == "Mujer") %>%
+  group_by(edad_grupos) %>%
+  slice_min(perc, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  select("min"=perc)
+
+
+ft_3<-df %>%
+  filter(fecha == as.Date("2025-10-01")) %>%
+  group_by(mes, genero, edad_grupos, idv_recod) %>%
+  tally(wt = ponde_mes) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  ungroup() %>%
+  filter(genero == "Mujer") %>%
+  group_by(edad_grupos) %>%
+  ungroup() %>%
+  select("octubre"=perc)
+
+ft_3<-df %>%
+  filter(fecha == as.Date("2025-09-05")) %>%
+  filter(fuente == "cis") %>%
+  group_by(genero, edad_grupos, idv_recod) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  ungroup() %>%
+  filter(genero == "Mujer") %>%
+  group_by(edad_grupos) %>%
+  ungroup() %>%
+  select("octubre"=perc)
+
+
+ft<-bind_cols(ft_0, ft_1, ft_2, ft_3)
+
+ft <- ft %>%
+  mutate(diff = max - min,
+         diff_pct = ((min - max) / max) * 100,
+         diff_pct = round(diff_pct, 1)) %>%
+  select(1:4,6,7,5)
+
+
+
+# Crear escalas de color
+verde_pal <- col_numeric(
+  palette = c("#e5f5e0", "#006d2c"),  # verde claro → verde oscuro
+  domain = range(ft$max, na.rm = TRUE)
+)
+
+rojo_pal <- col_numeric(
+  palette = c("#fee0d2", "#99000d"),  # rojo claro → rojo oscuro
+  domain = range(ft$min, na.rm = TRUE)
+)
+
+ft <- ft %>%
+  flextable() %>%
+  add_header_lines("IDV al PSOE en diferentes estudios") %>%
+  set_header_labels(
+    edad_grupos = "Edad",
+    max = "IDV max",
+    min = "IDV min",
+    diff = "Diferencia",
+    octubre = "Ultimo dato"
+  ) %>%
+  theme_vanilla() %>%
+  autofit() %>%
+  align(align = "center", part = "all") %>%
+  align(j = 1, align = "left", part = "all") %>%
+  bold(part = "header") %>%
+  bold(part = "header", i = 1) %>%
+  fontsize(size = 11, part = "all") %>%
+  border_remove() %>%
+  colformat_num(big.mark = ".", decimal.mark = ",") %>%
+  hline_top(border = fp_border(color = "black", width = 1)) %>%
+  hline_bottom(border = fp_border(color = "black", width = 1)) %>%
+  # 🔹 aplicar color de fondo según valor
+  bg(i = ~ !is.na(max), j = "max", bg = ~ verde_pal(max)) %>%
+  bg(i = ~ !is.na(min), j = "min", bg = ~ rojo_pal(min))
+
+
+
+variacion_edad_mujeres2<-df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  group_by(mes, genero, edad_grupos, idv_recod) %>%
+  tally(wt = ponde_mes) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  mutate(max_perc = max(perc, na.rm = TRUE),
+         variacion = perc - max_perc) %>%
+  ungroup() %>%
+  filter(genero == "Mujer") %>%
+  group_by(edad_grupos) %>%
+  filter(perc == min(perc)) %>%
+  ungroup() %>%
+  select(-idv_recod, -genero, -n, -perc)
+
+a<-df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  group_by(fuente, mes, genero, idv_recod) %>%
+  tally(wt = ponde_mes) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  mutate(max_perc = max(perc, na.rm = TRUE),
+         variacion = perc - max_perc) %>%
+  ungroup() %>%
+  filter(mes == as.Date("2025-07-01"))
+
+b<-df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  group_by(fuente, mes, genero, idv_recod) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  mutate(max_perc = max(perc, na.rm = TRUE),
+         variacion = perc - max_perc) %>%
+  ungroup() %>%
+  filter(mes == as.Date("2025-07-01"))
+
+c<-df %>%
+  filter(mes == as.Date("2025-07-01")) %>%
+  group_by(recuerdo_pond) %>%
+  tally(wt = ponde_mes) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  select(-n)
+
+d<-df %>%
+  filter(fuente == "cis") %>%
+  filter(mes == as.Date("2025-07-01")) %>%
+  group_by(recuerdo_pond) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  select(-n)
+
+d<-df %>%
+  filter(fuente == "40_db") %>%
+  filter(mes == as.Date("2025-07-01")) %>%
+  group_by(recuerdo_pond) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  select(-n)
+
+df %>%
+  filter(fuente == "40_db") %>%
+  filter(mes == as.Date("2025-07-01")) %>%
+  group_by(genero) %>%
+  summarise(n=n())
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  select(-n)
+
+  df %>%
+    filter(fuente == "cis") %>%
+    filter(mes == as.Date("2025-07-01")) %>%
+    group_by(genero) %>%
+    summarise(n=n())
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+    select(-n)
+
+
+
+
+
+
+
+# Variación IDV PSOE con respecto a septiembre 2023 (todas las fuentes)
+variacion_gnral_estudios<-df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  group_by(fuente,mes, genero, idv_recod) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE") %>%
+  group_by(genero) %>%
+  mutate(max_perc = max(perc, na.rm = TRUE),
+         variacion = perc - max_perc) %>%
+  ungroup()
+
+recuerdo_pond_ajust<-df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  group_by(mes, recuerdo_pond) %>%
+  tally(wt = ponde_mes_ajustada) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  select(-n)
+
+genero_pond_ajust<-df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  group_by(mes, genero) %>%
+  tally(wt = ponde_mes_ajustada) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  select(-n)
+
+library(patchwork)
+#a+b+c
+
+# Tabla
+variacion_gnral_tabla <- variacion_gnral %>%
+  select(-idv_recod, -n, -max_perc, -perc) %>%
+  pivot_wider(names_from = genero,
+              values_from = variacion) %>%
+  filter(fecha_mes > as.Date("2023-09-01"))
+
+
+df %>%
+  mutate(fecha_mes = as.Date(format(fecha, "%Y-%m-01"))) %>%
+  filter(fecha_mes == as.Date("2024-09-01")) %>%
+  group_by(recuerdo_pond) %>%
+  tally(wt = ponde_mes) %>%
+  mutate(perc = round((n/sum(n)*100),1))
+
+df %>%
+  mutate(fecha_mes = as.Date(format(fecha, "%Y-%m-01"))) %>%
+  filter(fecha_mes == as.Date("2024-09-01")) %>%
+  group_by(genero) %>%
+  tally(wt = ponde_mes) %>%
+  mutate(perc = round((n/sum(n)*100),1))
+
+df %>%
+  mutate(fecha_mes = as.Date(format(fecha, "%Y-%m-01"))) %>%
+  filter(fecha_mes == as.Date("2024-09-01")) %>%
+  group_by(ccaa) %>%
+  tally(wt = ponde_mes) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  arrange(desc(perc))
+
+# IDV PSOE
+idv_gnral_psoe<-df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  group_by(mes, genero, idv_recod) %>%
+  tally(wt = ponde_mes) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PSOE")
+
+idv_gnral_psoe %>%
+  ggplot(aes(x = mes, y = perc, color = genero)) +
+  geom_line(linewidth = .8) +
+  geom_point(data = . %>% filter(mes == "2025-10-01"),size = 3) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_color_manual(values = c("#5398BE", "#EE7674")) +
+  geom_vline(xintercept = as.Date("2025-07-01"), linetype = "dotted", color = "black") +
+  annotate("text", x = as.Date("2025-07-01") + 8, y = 25,
+           label = "Caso Cerdán", family = "roboto-light",
+           hjust = 0, size = 13) +
+  scale_y_continuous(breaks = seq(0, 25, 5), limits = c(0, 27)) +
+  theme_minimal() +
+  theme(
+    panel.spacing.y = unit(0.8, "lines"),
+    panel.spacing.x = unit(2.5, "lines"),
+    legend.position = "None",
+    strip.text = element_text(family = "roboto", size = 32, lineheight = 0.4),
+    axis.title = element_blank(),
+    axis.text.x = element_text(family = "roboto", size = 36, face = "plain", lineheight = 0.4),
+    axis.text.y = element_text(family = "roboto", size = 36, face = "plain", lineheight = 0.4),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.2, color = "grey80"),
+    plot.title = element_text(family = "roboto-medium", size = 42, lineheight = 0.3, face = "bold"),
+    plot.subtitle = element_markdown(family = "roboto-light", size = 44, lineheight = 0.4, color = "gray10", face = "plain", margin = margin(b = 15)),
+    plot.caption = element_text(family = "roboto-light", size = 30, lineheight = 0.3, color = "gray10", face = "plain"),
+    plot.margin = margin(t = 20, r = 15, b = 15, l = 15)) +
+  labs(subtitle = "IDV al PSOE desde septiembre de 2023 entre <span style='color:#5398BE'><b>hombres</b></span> y <span style='color:#EE7674'><b>mujeres</b></span>")
+
+ggsave("output/idv_psoe.jpeg", width = 20, height = 13, dpi = 300, units = "cm")
+
+
+# Variación IDV PP con respecto a septiembre 2023 (todas las fuentes)
+variacion_gnral_pp<-df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  mutate(fecha_mes = as.Date(format(fecha, "%Y-%m-01"))) %>%
+  group_by(fecha_mes, genero, idv_recod) %>%
+  tally(wt = ponde_mes) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PP") %>%
+  group_by(genero) %>%
+  mutate(max_perc = max(perc, na.rm = TRUE),
+         variacion = perc - max_perc) %>%
+  ungroup()
+
+# Gráfico
+variacion_gnral_pp %>%
+  ggplot(aes(x = fecha_mes, y = variacion, color = genero)) +
+  geom_line() +
+  geom_point(data = . %>% filter(fecha_mes == max(fecha_mes)),size = 2) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_vline(xintercept = as.Date("2025-07-01"), linetype = "dotted", color = "black") +
+  annotate("text", x = as.Date("2025-07-01") + 8, y = -1, label = "Caso Cerdán", hjust = 0, size = 3.5) +
+  scale_color_manual(values = c("#5398BE", "#EE7674")) +
+  scale_y_continuous(breaks = seq(0, -10, -2), limits = c(0, -10)) +
+  theme_minimal()
+
+
+# IDV PP
+idv_gnral_pp<-df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  mutate(fecha_mes = as.Date(format(fecha, "%Y-%m-01"))) %>%
+  group_by(fecha_mes, genero, idv_recod) %>%
+  tally(wt = ponde_mes) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "PP")
+
+idv_gnral_pp %>%
+  ggplot(aes(x = fecha_mes, y = perc, color = genero)) +
+  geom_line() +
+  geom_point(data = . %>% filter(fecha_mes == "2025-10-01"),size = 2) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_color_manual(values = c("#5398BE", "#EE7674")) +
+  geom_vline(xintercept = as.Date("2025-07-01"), linetype = "dotted", color = "black") +
+  annotate("text", x = as.Date("2025-07-01") + 8, y = 25, label = "Caso Cerdán", hjust = 0, size = 3.5) +
+  scale_y_continuous(breaks = seq(0, 25, 5), limits = c(0, 27)) +
+  theme_minimal()
+
+# Variación IDV Vox con respecto a septiembre 2023 (todas las fuentes)
+variacion_gnral_vox<-df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  mutate(fecha_mes = as.Date(format(fecha, "%Y-%m-01"))) %>%
+  group_by(fecha_mes, genero, idv_recod) %>%
+  tally(wt = ponde_mes) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "Vox") %>%
+  group_by(genero) %>%
+  mutate(max_perc = max(perc, na.rm = TRUE),
+         variacion = perc - max_perc) %>%
+  ungroup()
+
+# Gráfico
+variacion_gnral_vox %>%
+  ggplot(aes(x = fecha_mes, y = variacion, color = genero)) +
+  geom_line() +
+  geom_point(data = . %>% filter(fecha_mes == max(fecha_mes)),size = 2) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_vline(xintercept = as.Date("2025-07-01"), linetype = "dotted", color = "black") +
+  annotate("text", x = as.Date("2025-07-01") + 8, y = -1, label = "Caso Cerdán", hjust = 0, size = 3.5) +
+  scale_color_manual(values = c("#5398BE", "#EE7674")) +
+  scale_y_continuous(breaks = seq(0, -10, -2), limits = c(0, -10)) +
+  theme_minimal()
+
+# IDV Vox
+idv_gnral_vox<-df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  mutate(fecha_mes = as.Date(format(fecha, "%Y-%m-01"))) %>%
+  group_by(fecha_mes, genero, idv_recod) %>%
+  tally(wt = ponde_mes) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "Vox")
+
+idv_gnral_vox %>%
+  ggplot(aes(x = fecha_mes, y = perc, color = genero)) +
+  geom_line() +
+  geom_point(data = . %>% filter(fecha_mes == "2025-10-01"),size = 2) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_color_manual(values = c("#5398BE", "#EE7674")) +
+  geom_vline(xintercept = as.Date("2025-07-01"), linetype = "dotted", color = "black") +
+  annotate("text", x = as.Date("2025-07-01") + 8, y = 19, label = "Caso Cerdán", hjust = 0, size = 3.5) +
+  scale_y_continuous(breaks = seq(0, 20, 5), limits = c(0, 20)) +
+  theme_minimal()
+
+
+
+
+df_idv_psoe<-df %>%
+  filter(fuente %in% c("40_db", "cis")) %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  mutate(fecha_mes = as.Date(format(fecha, "%Y-%m-01"))) %>%
+  group_by(fecha_mes, fuente, genero, idv_recod) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "psoe")
+
+
+df_var <- df_idv_psoe %>%
+  group_by(genero) %>%
+  mutate(max_perc = max(perc, na.rm = TRUE),
+         variacion = perc - max_perc) %>%
+  ungroup()
+
+
+df_idv_psoe %>%
+  ggplot(aes(fecha, perc, color = genero, group = genero)) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous(breaks = seq(0, 30, 10), limits = c(0, 30)) +
+  theme_minimal() +
+  facet_wrap(~fuente)
+
+
+df_idv_psoe2<-df %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  mutate(fecha_mes = as.Date(format(fecha, "%Y-%m-01"))) %>%
+  group_by(fecha_mes, genero, idv_recod) %>%
+  tally(wt = ponde_mes) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "psoe")
+
+
+df_idv_psoe2 %>%
+  ggplot(aes(fecha_mes, perc, color = genero, group = genero)) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous(breaks = seq(0, 30, 10), limits = c(0, 30)) +
+  theme_minimal()
+
+
+
+
+df_var2 <- df_idv_psoe2 %>%
+  group_by(genero) %>%
+  mutate(max_perc = max(perc, na.rm = TRUE),
+         variacion = perc - max_perc) %>%
+  ungroup()
+
+
+
+df_var2 %>%
+  ggplot(aes(x = fecha_mes, y = variacion, color = genero)) +
+  geom_line() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  theme_minimal() +
+  labs(
+    x = "Mes",
+    title = "Variación (puntos porcentuales) de la intención de voto al PSOE respecto al máximo")+
+  theme(panel.grid.minor = element_blank())
+
+
+df_var %>%
+  ggplot(aes(x = fecha_mes, y = variacion, color = genero)) +
+  geom_line() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  theme_minimal() +
+  facet_wrap(~fuente) +
+  labs(
+    x = "Mes",
+    title = "Variación (puntos porcentuales) de la intención de voto al PSOE respecto al máximo")+
+  theme(panel.grid.minor = element_blank())
+
+
+df_idv_psoe3<-df %>%
+  filter(fuente %in% c("40_db")) %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  mutate(fecha_mes = as.Date(format(fecha, "%Y-%m-01"))) %>%
+  group_by(fecha, fuente, genero, idv_recod) %>%
+  tally(wt = ponde) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "psoe")
+
+
+df_var3 <- df_idv_psoe3 %>%
+  group_by(genero) %>%
+  mutate(max_perc = max(perc, na.rm = TRUE),
+         variacion = perc - max_perc) %>%
+  ungroup()
+
+df_var3 %>%
+  ggplot(aes(x = fecha, y = variacion, color = genero)) +
+  geom_line() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  theme_minimal() +
+  facet_wrap(~fuente) +
+  labs(
+    x = "Mes",
+    title = "Variación (puntos porcentuales) de la intención de voto al PSOE respecto al máximo")+
+  theme(panel.grid.minor = element_blank())
+
+ggsave("40.jpeg")
+
+
+
+
+df %>%
+  filter(fuente %in% c("cis")) %>%
+  filter(fecha >= as.Date("2023-09-01")) %>%
+  mutate(fecha_mes = as.Date(format(fecha, "%Y-%m-01"))) %>%
+  group_by(fecha, fuente, genero, idv_recod) %>%
+  tally(wt = ponde) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(idv_recod == "psoe") %>%
+  group_by(genero) %>%
+  mutate(max_perc = max(perc, na.rm = TRUE),
+         variacion = perc - max_perc) %>%
+  ungroup() %>%
+  ggplot(aes(x = fecha, y = variacion, color = genero)) +
+  geom_line() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  theme_minimal() +
+  facet_wrap(~fuente) +
+  labs(
+    x = "Mes",
+    title = "Variación (puntos porcentuales) de la intención de voto al PSOE respecto al máximo")+
+  theme(panel.grid.minor = element_blank())
+
+ggsave("cis.jpeg")
+
+
+library(patchwork)
+c<-a+b
+c
+
+
+df %>%
+  filter(mes == as.Date("2023-09-01")) %>%
+  group_by(fuente, genero, edad_grupos, recuerdo_recod) %>%
+  tally(wt = ponde_estudio) %>%
+  mutate(perc = round((n/sum(n)*100),1)) %>%
+  filter(recuerdo_recod == "PSOE") %>%
+  filter(genero == "Mujer")

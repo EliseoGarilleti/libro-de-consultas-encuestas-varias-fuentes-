@@ -1,0 +1,86 @@
+---
+title: "Intención de voto (IDV)"
+format:
+  html: default
+  pdf: default
+---
+```{r, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, fig.path = "figures/")
+```
+
+
+```{r, include=FALSE}
+# Cargar entorno y configuraciones
+source("code/00_setup.R")
+source("code/01_theme.R")
+source("code/02_datos.R")
+```
+
+```{r, include=FALSE}
+df_idv<-df %>%
+  group_by(mes, idv_group) %>%
+  tally(wt = ponde_mes_ajustada) %>%
+  mutate(perc = round((n / sum(n) * 100), 1)) %>%
+  filter(idv_group %in% c("PSOE", "PP", "Vox", "Sumar", "Podemos")) 
+```
+
+```{r, echo=FALSE}
+df_idv %>% 
+  ggplot(aes(mes, perc, color = idv_group)) +
+  geom_line(linewidth = .8) +
+  geom_point(data = ~.x %>%
+               group_by(idv_group) %>%
+               filter(mes == max(mes, na.rm = TRUE)) %>%
+               ungroup(), 
+             size = 3) +
+  scale_x_date(labels = label_date("%b %y", locale = "es_ES")) +
+  scale_color_manual(values = colores_partidos) +
+  theme_minimal() + 
+  labs(subtitle = "Intención de voto a <span style='color:#E3001B'><b>PSOE</b></span>, <span style='color:#1d4184'><b>PP</b></span>, <span style='color:#5BC035'><b>Vox</b></span>, <span style='color:#F57BA4'><b>Sumar</b></span> y <span style='color:#662D91'><b>Podemos</b></span>") +
+  theme_1
+```
+
+```{r, include=FALSE}
+Sys.setlocale("LC_TIME", "es_ES.UTF-8") %||%
+  Sys.setlocale("LC_TIME", "Spanish_Spain.1252") %||%
+  Sys.setlocale("LC_TIME", "es_ES")
+```
+
+```{r, include=FALSE}
+resumen <- df_idv %>%
+  group_by(idv_group) %>%
+  summarise(
+    mes_ini = min(mes, na.rm = TRUE),
+    perc_ini = perc[which.min(mes)],
+    mes_fin = max(mes, na.rm = TRUE),
+    perc_fin = perc[which.max(mes)],
+    mes_min = mes[which.min(perc)],
+    perc_min = min(perc, na.rm = TRUE),
+    mes_max = mes[which.max(perc)],
+    perc_max = max(perc, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    diff = round(perc_fin - perc_ini, 1),
+    color = case_when(
+      idv_group == "PSOE" ~ "#E3001B",
+      idv_group == "PP" ~ "#1d4184",
+      idv_group == "Vox" ~ "#5BC035",
+      idv_group == "Sumar" ~ "#F57BA4",
+      idv_group == "Podemos" ~ "#662D91"
+    ),
+    texto = glue(
+      "<li><b><span style='color:{color}'>{idv_group}</span></b>: ",
+      "En {format(mes_ini, '%B de %Y', locale='es_ES.UTF-8')} un {perc_ini}% afirmaba que les votaría, ",
+      "hoy lo hace un {perc_fin}%, una diferencia de {diff} puntos. ",
+      "El dato más bajo fue {perc_min}% en {format(mes_min, '%B de %Y', locale='es_ES.UTF-8')}, ",
+      "y el más alto {perc_max}% en {format(mes_max, '%B de %Y', locale='es_ES.UTF-8')}.</li>"
+    )
+  )
+```
+
+```{r, results='asis', echo=FALSE}
+cat("<ul>")
+cat(paste(resumen$texto, collapse = "\n"))
+cat("</ul>")
+```

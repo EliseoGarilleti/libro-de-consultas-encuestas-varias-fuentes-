@@ -1,0 +1,16 @@
+# Paquetes
+library(tidyverse)
+library(showtext)
+library(ggtext)
+library(flextable)
+library(officer)
+library(scales)
+library(quarto)
+library(glue)
+library(lubridate)
+
+# Fuentes
+font_add_google("Roboto", "roboto")
+font_add_google("Roboto", "roboto-light", regular.wt = 300)
+font_add_google("Roboto", "roboto-medium", regular.wt = 500)
+showtext_auto()

@@ -1,0 +1,28 @@
+project:
+  type: book
+  output-dir: output
+
+book:
+  title: "Libro de Consultas"
+  subtitle: "Tendencias electorales (varias encuestas)"
+  author: "Unidad de Análisis y Estudios"
+  chapters:
+    - index.qmd
+    - 01_idv.qmd
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    css: styles.css
+  pdf:
+    documentclass: scrreprt
+    pdf-engine: xelatex
+    toc: true
+    include-in-header: 
+      - cover-style.tex      # define fuentes y colores
+    include-before-body: 
+      - cover.tex            # crea la portada azul
+    keep-tex: true           # conserva el .tex intermedio para depuración
+
+editor: visual

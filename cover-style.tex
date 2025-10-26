@@ -1,0 +1,59 @@
+% === cover-style.tex ===
+\usepackage{fontspec}
+\usepackage{xcolor}
+\usepackage{pagecolor}
+
+% -------------------------------------------------------
+% CONFIGURACIÓN DE FUENTES
+% -------------------------------------------------------
+% ⚠️ Asegúrate de colocar tus fuentes en esta carpeta sin tildes ni espacios:
+% /Users/eliseo/Documents/fonts/
+%
+% Contenido esperado:
+%   - RobotoVariable.ttf
+%   - RobotoVariable-Italic.ttf
+
+\setmainfont[
+  Path = /Users/eliseo/Documents/fonts/,
+  UprightFont = {RobotoVariable.ttf},
+  ItalicFont  = {RobotoVariable-Italic.ttf}
+]{Roboto}
+
+% Variantes de peso para usar dentro del documento
+\newfontfamily\robotoLight[
+  Path = /Users/eliseo/Documents/fonts/,
+  UprightFont = {RobotoVariable.ttf},
+  FontFace = {l}{n}{+wght=300}
+]{Roboto Light}
+
+\newfontfamily\robotoMedium[
+  Path = /Users/eliseo/Documents/fonts/,
+  UprightFont = {RobotoVariable.ttf},
+  FontFace = {m}{n}{+wght=500}
+]{Roboto Medium}
+
+\newfontfamily\robotoRegular[
+  Path = /Users/eliseo/Documents/fonts/,
+  UprightFont = {RobotoVariable.ttf},
+  FontFace = {r}{n}{+wght=400}
+]{Roboto Regular}
+
+% -------------------------------------------------------
+% COLORES PERSONALIZADOS
+% -------------------------------------------------------
+\definecolor{coverblue}{HTML}{0F3754}  % azul oscuro corporativo
+\definecolor{coverwhite}{HTML}{FFFFFF} % blanco puro
+
+% -------------------------------------------------------
+% ESTILO GLOBAL DEL DOCUMENTO
+% -------------------------------------------------------
+\AtBeginDocument{%
+  % Forzamos Roboto como fuente sans-serif predeterminada
+  \renewcommand{\familydefault}{\sfdefault}
+  \setmainfont[
+    Path = /Users/eliseo/Documents/fonts/,
+    UprightFont = {RobotoVariable.ttf},
+    ItalicFont  = {RobotoVariable-Italic.ttf}
+  ]{Roboto}
+  \robotoRegular
+}
