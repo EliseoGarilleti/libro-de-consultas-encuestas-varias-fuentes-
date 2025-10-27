@@ -30,5 +30,8 @@ format:
 
 # Introducción
 
-Este documento recoge la intención de voto a los principales partidos y otras variables relacionadas, basadas en datos acumulados de encuestas desde septiembre de 2023.\
-A continuación se muestran los resultados desagregados por sexo, edad y otras variables de interés.
+En este documento se presentan gráficos y resumenes de diferentes variables relacionadas con el comportamiento electoral con respecto a las próximas elecciones generales.<br> Los datos proceden de diferentes fuentes que ponen a disposición del público sus datos, sobre todo CIS y 40db, pero también Sigma Dos, Sociométrica, Opina360 etc.
+
+El documento consta de la siguientes variables:
+
+* **Intención de voto**: Intención de voto a los principales partidos entre la población general y en función de diferentes variables sociodemográficas.

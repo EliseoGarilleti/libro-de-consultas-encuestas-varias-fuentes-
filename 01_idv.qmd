@@ -1,5 +1,5 @@
 ---
-title: "Intención de voto (IDV)"
+title: "Intención de voto"
 format:
   html: default
   pdf: default
@@ -142,7 +142,6 @@ resumen <- df_idv %>%
     )
   )
 ```
-
 
 ```{r, results='asis', echo=FALSE}
 cat("<br>")

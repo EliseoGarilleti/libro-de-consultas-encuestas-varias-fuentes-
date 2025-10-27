@@ -8,7 +8,7 @@ book:
   author: "Unidad de Análisis y Estudios"
   chapters:
     - index.qmd
-    - part: "1 · Intención de voto (IDV)"
+    - part: "2 · Intención de voto"
       chapters:
         - 01_idv.qmd
         - 01_1_idv_genero.qmd
