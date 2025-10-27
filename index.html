@@ -3868,7 +3868,7 @@ font-size: 1.05rem;
 
 h1, h2, h3, h4, h5, h6 {
 font-family: 'Roboto', sans-serif;
-color: #0f3754; 
+color: #252525; 
 margin-top: 1.5em;
 margin-bottom: 0.5em;
 }
@@ -3926,11 +3926,11 @@ text-decoration: underline;
 
 .quarto-title-block .title {
 font-weight: 500;
-color: #0f3754;
+color: #1D1D1D;
 }
 .quarto-title-block .subtitle {
 font-weight: 300;
-color: #333;
+color: #252525;
 }
 
 ul li {
@@ -3941,6 +3941,19 @@ line-height: 1.5;
 ul {
 margin-top: 1em;
 margin-bottom: 1.5em;
+}
+
+.titulo-tabla {
+font-family: 'Roboto', sans-serif;
+font-weight: 500;
+color: #1D1D1D;
+text-align: center;
+margin-bottom: 15px;
+font-size: 1.3rem;
+}
+.content {
+max-width: 1600px; 
+margin: auto;
 }
 </style>
 </head>
@@ -3954,7 +3967,7 @@ margin-bottom: 1.5em;
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Libro de Consultas</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html"><span class="chapter-title">Libro de Consultas</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -3983,14 +3996,13 @@ margin-bottom: 1.5em;
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Libro de Consultas</span></span></a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Libro de Consultas</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">2 · Intención de voto</span></a>
+ <span class="menu-text">1 · Intención de voto</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -3998,26 +4010,43 @@ margin-bottom: 1.5em;
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01_idv.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Intención de voto</span></span></a>
+  <a href="./01_idv.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Intención de voto</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01_1_idv_genero.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Intención de voto por género</span></span></a>
+  <a href="./01_1_idv_genero.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Intención de voto por género</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01_2_idv_edad.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Intención de voto por edad</span></span></a>
+  <a href="./01_2_idv_edad.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Intención de voto por edad</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01_3_idv_ccaa.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Intención de voto por CCAA</span></span></a>
+  <a href="./01_3_idv_ccaa.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Intención de voto por CCAA</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">2 · Anexo</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./99_anexo_idv.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Intención de voto (tabla)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./99_anexo_matriz.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Matriz de transferencias</span></a>
   </div>
 </li>
       </ul>
@@ -4032,7 +4061,7 @@ margin-bottom: 1.5em;
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#introducción" id="toc-introducción" class="nav-link active" data-scroll-target="#introducción"><span class="header-section-number">1</span> Introducción</a></li>
+  <li><a href="#introducción" id="toc-introducción" class="nav-link active" data-scroll-target="#introducción">Introducción</a></li>
   </ul>
 </nav>
     </div>
@@ -4065,8 +4094,8 @@ margin-bottom: 1.5em;
 </header>
 
 
-<section id="introducción" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Introducción</h1>
+<section id="introducción" class="level1">
+<h1>Introducción</h1>
 <p>En este documento se presentan gráficos y resumenes de diferentes variables relacionadas con el comportamiento electoral con respecto a las próximas elecciones generales.<br> Los datos proceden de diferentes fuentes que ponen a disposición del público sus datos, sobre todo CIS y 40db, pero también Sigma Dos, Sociométrica, Opina360 etc.</p>
 <p>El documento consta de la siguientes variables:</p>
 <ul>
@@ -4482,7 +4511,7 @@ margin-bottom: 1.5em;
   </div>
   <div class="nav-page nav-page-next">
       <a href="./01_idv.html" class="pagination-link" aria-label="Intención de voto">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Intención de voto</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-title">Intención de voto</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

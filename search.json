@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "Libro de Consultas",
     "section": "",
-    "text": "1 Introducción\nEn este documento se presentan gráficos y resumenes de diferentes variables relacionadas con el comportamiento electoral con respecto a las próximas elecciones generales. Los datos proceden de diferentes fuentes que ponen a disposición del público sus datos, sobre todo CIS y 40db, pero también Sigma Dos, Sociométrica, Opina360 etc.\nEl documento consta de la siguientes variables:\n\nIntención de voto: Intención de voto a los principales partidos entre la población general y en función de diferentes variables sociodemográficas.",
+    "text": "Introducción\nEn este documento se presentan gráficos y resumenes de diferentes variables relacionadas con el comportamiento electoral con respecto a las próximas elecciones generales. Los datos proceden de diferentes fuentes que ponen a disposición del público sus datos, sobre todo CIS y 40db, pero también Sigma Dos, Sociométrica, Opina360 etc.\nEl documento consta de la siguientes variables:\n\nIntención de voto: Intención de voto a los principales partidos entre la población general y en función de diferentes variables sociodemográficas.",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Libro de Consultas</span>"
     ]
@@ -12,45 +12,67 @@
   {
     "objectID": "01_idv.html",
     "href": "01_idv.html",
-    "title": "2  Intención de voto",
+    "title": "Intención de voto",
     "section": "",
     "text": "PP: En octubre de 2025 un 18.3% afirma que les votará. En septiembre de 2023 lo hacía un 24.5%, una diferencia de -6.2 puntos. El dato más bajo fue 18.3% en octubre de 2025, y el más alto 26% en diciembre de 2023.\n\n\nPSOE: En octubre de 2025 un 19.1% afirma que les votará. En septiembre de 2023 lo hacía un 22.8%, una diferencia de -3.7 puntos. El dato más bajo fue 16.1% en julio de 2025, y el más alto 22.8% en septiembre de 2023.\n\n\nPodemos: En octubre de 2025 un 3% afirma que les votará. En enero de 2024 lo hacía un 0.9%, una diferencia de 2.1 puntos. El dato más bajo fue 0.7% en marzo de 2024, y el más alto 3.7% en agosto de 2025.\n\n\nSumar: En octubre de 2025 un 4.8% afirma que les votará. En septiembre de 2023 lo hacía un 8.2%, una diferencia de -3.4 puntos. El dato más bajo fue 4.1% en enero de 2025, y el más alto 8.2% en septiembre de 2023.\n\n\nVox: En octubre de 2025 un 15.4% afirma que les votará. En septiembre de 2023 lo hacía un 9.4%, una diferencia de 6 puntos. El dato más bajo fue 8.4% en noviembre de 2024, y el más alto 15.4% en octubre de 2025.",
     "crumbs": [
-      "2 · Intención de voto",
+      "1 · Intención de voto",
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Intención de voto</span>"
     ]
   },
   {
     "objectID": "01_1_idv_genero.html",
     "href": "01_1_idv_genero.html",
-    "title": "3  Intención de voto por género",
+    "title": "Intención de voto por género",
     "section": "",
     "text": "Hombre: en octubre de 2025, el partido con mayor intención de voto fue Vox con un 18%. El partido que más veces ha liderado el periodo es PP. El PSOE ocupa actualmente el 3º puesto con un 17.2%, y durante la mayor parte del periodo ha ocupado el 2º puesto.\n\n\nMujer: en octubre de 2025, el partido con mayor intención de voto fue PSOE con un 20.9%. El partido que más veces ha liderado el periodo es PP. El PSOE ocupa actualmente el 1º puesto con un 20.9%, y durante la mayor parte del periodo ha ocupado el 2º puesto.",
     "crumbs": [
-      "2 · Intención de voto",
+      "1 · Intención de voto",
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Intención de voto por género</span>"
     ]
   },
   {
     "objectID": "01_2_idv_edad.html",
     "href": "01_2_idv_edad.html",
-    "title": "4  Intención de voto por edad",
+    "title": "Intención de voto por edad",
     "section": "",
     "text": "18-24: en octubre de 2025, el partido con mayor intención de voto fue Vox con un 26.6%. El partido que más veces ha liderado el periodo es Vox. El PSOE ocupa actualmente el 2º puesto con un 15.2%, y durante la mayor parte del periodo ha ocupado el 2º puesto.\n\n\n25-34: en octubre de 2025, el partido con mayor intención de voto fue Vox con un 20.9%. El partido que más veces ha liderado el periodo es PSOE. El PSOE ocupa actualmente el 2º puesto con un 14.8%, y durante la mayor parte del periodo ha ocupado el 1º puesto.\n\n\n35-44: en octubre de 2025, el partido con mayor intención de voto fue Vox con un 20.7%. El partido que más veces ha liderado el periodo es PP. El PSOE ocupa actualmente el 3º puesto con un 13.9%, y durante la mayor parte del periodo ha ocupado el 2º puesto.\n\n\n45-54: en octubre de 2025, el partido con mayor intención de voto fue PSOE con un 18.6%. El partido que más veces ha liderado el periodo es PP. El PSOE ocupa actualmente el 1º puesto con un 18.6%, y durante la mayor parte del periodo ha ocupado el 2º puesto.\n\n\n55-64: en octubre de 2025, el partido con mayor intención de voto fue PSOE con un 22.2%. El partido que más veces ha liderado el periodo es PP. El PSOE ocupa actualmente el 1º puesto con un 22.2%, y durante la mayor parte del periodo ha ocupado el 2º puesto.\n\n\n65+: en octubre de 2025, el partido con mayor intención de voto fue PP con un 26.6%. El partido que más veces ha liderado el periodo es PP. El PSOE ocupa actualmente el 2º puesto con un 23.9%, y durante la mayor parte del periodo ha ocupado el 2º puesto.",
     "crumbs": [
-      "2 · Intención de voto",
+      "1 · Intención de voto",
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Intención de voto por edad</span>"
     ]
   },
   {
     "objectID": "01_3_idv_ccaa.html",
     "href": "01_3_idv_ccaa.html",
-    "title": "5  Intención de voto por CCAA",
+    "title": "Intención de voto por CCAA",
     "section": "",
     "text": "Andalucía: En octubre de 2025, el partido con mayor intención de voto es PP (21.7%). A lo largo del periodo analizado, PP ha liderado la intención de voto más veces. Actualmente, el PSOE ocupa la posición 2 con un 19.4%, y durante la mayor parte del periodo ha ocupado el puesto 2.\n\n\nCanarias: En octubre de 2025, el partido con mayor intención de voto es Vox (24.8%). A lo largo del periodo analizado, PSOE ha liderado la intención de voto más veces. Actualmente, el PSOE ocupa la posición 2 con un 23.6%, y durante la mayor parte del periodo ha ocupado el puesto 1.\n\n\nCastilla y León: En octubre de 2025, el partido con mayor intención de voto es PP (24.2%). A lo largo del periodo analizado, PP ha liderado la intención de voto más veces. Actualmente, el PSOE ocupa la posición 2 con un 23.5%, y durante la mayor parte del periodo ha ocupado el puesto 2.\n\n\nCastilla-La Mancha: En octubre de 2025, el partido con mayor intención de voto es PP (26.2%). A lo largo del periodo analizado, PP ha liderado la intención de voto más veces. Actualmente, el PSOE ocupa la posición 2 con un 24.7%, y durante la mayor parte del periodo ha ocupado el puesto 2.\n\n\nCataluña: En octubre de 2025, el partido con mayor intención de voto es PSOE (18.9%). A lo largo del periodo analizado, PSOE ha liderado la intención de voto más veces. Actualmente, el PSOE ocupa la posición 1 con un 18.9%, y durante la mayor parte del periodo ha ocupado el puesto 1.\n\n\nComunidad de Madrid: En octubre de 2025, el partido con mayor intención de voto es PP (23.5%). A lo largo del periodo analizado, PP ha liderado la intención de voto más veces. Actualmente, el PSOE ocupa la posición 2 con un 19.4%, y durante la mayor parte del periodo ha ocupado el puesto 2.\n\n\nComunitat Valenciana: En octubre de 2025, el partido con mayor intención de voto es Vox (19.6%). A lo largo del periodo analizado, PP ha liderado la intención de voto más veces. Actualmente, el PSOE ocupa la posición 3 con un 16.7%, y durante la mayor parte del periodo ha ocupado el puesto 2.\n\n\nGalicia: En octubre de 2025, el partido con mayor intención de voto es PP (23.1%). A lo largo del periodo analizado, PP ha liderado la intención de voto más veces. Actualmente, el PSOE ocupa la posición 2 con un 17.8%, y durante la mayor parte del periodo ha ocupado el puesto 2.\n\n\nPaís Vasco: En octubre de 2025, el partido con mayor intención de voto es PSOE (19.5%). A lo largo del periodo analizado, PSOE ha liderado la intención de voto más veces. Actualmente, el PSOE ocupa la posición 1 con un 19.5%, y durante la mayor parte del periodo ha ocupado el puesto 1.",
     "crumbs": [
-      "2 · Intención de voto",
+      "1 · Intención de voto",
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Intención de voto por CCAA</span>"
+    ]
+  },
+  {
+    "objectID": "99_anexo_idv.html",
+    "href": "99_anexo_idv.html",
+    "title": "Intención de voto (tabla)",
+    "section": "",
+    "text": "Intención de voto (elecciones generales)",
+    "crumbs": [
+      "2 · Anexo",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Intención de voto (tabla)</span>"
+    ]
+  },
+  {
+    "objectID": "99_anexo_matriz.html",
+    "href": "99_anexo_matriz.html",
+    "title": "Matriz de transferencias",
+    "section": "",
+    "text": "Intención de voto (elecciones generales)",
+    "crumbs": [
+      "2 · Anexo",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Matriz de transferencias</span>"
     ]
   }
 ]
