@@ -1,0 +1,55 @@
+---
+title: "Intención de voto (tabla)"
+prefer-html: true
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, fig.path = "figures/")
+
+# Asegurar idioma español para los meses
+locales <- c("es_ES.UTF-8", "Spanish_Spain.1252", "es_ES")
+for (loc in locales) {
+  res <- try(Sys.setlocale("LC_TIME", loc), silent = TRUE)
+  if (!inherits(res, "try-error") && !is.na(res)) break
+}
+```
+
+```{r, include=FALSE}
+# Cargar entorno y configuraciones
+source("code/00_setup.R")
+source("code/01_theme.R")
+source("code/02_datos.R")
+```
+
+```{r, include=FALSE}
+df_idv_tabla <- df %>%
+  group_by(mes, idv_group) %>%
+  tally(wt = ponde_mes_ajustada) %>%
+  mutate(perc = round((n / sum(n) * 100), 1)) %>%
+  filter(idv_group %in% c("PSOE", "PP", "Vox", "Sumar", "Podemos")) %>% 
+  select(-n) %>% 
+  pivot_wider(names_from = idv_group, values_from = perc) %>% 
+  rename("Fecha" = mes)
+```
+
+```{r, echo=FALSE}
+# Crear tabla
+htmltools::tagList(
+  titulo_tabla("Intención de voto (elecciones generales)"),
+
+  reactable(
+    df_idv_tabla,
+    striped = TRUE,
+    highlight = TRUE,
+    bordered = FALSE,
+    compact = TRUE,
+    defaultSorted = "Fecha",
+    defaultSortOrder = "desc",
+    pagination = TRUE,
+    defaultPageSize = 15,
+    theme = theme_tablas_1,
+    columns = columnas_centradas(df_idv_tabla) 
+  )
+)
+```
+

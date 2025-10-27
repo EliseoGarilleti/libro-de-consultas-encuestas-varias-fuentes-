@@ -9,6 +9,9 @@ library(quarto)
 library(glue)
 library(lubridate)
 library(ggiraph)
+library(reactable)
+library(htmltools)
+library(readxl)
 
 # Fuentes
 font_add_google("Roboto", "roboto")
@@ -22,3 +25,8 @@ ultimo_por_grupo <- function(data, grupo_var, tiempo_var) {
     filter({{ tiempo_var }} == max({{ tiempo_var }}, na.rm = TRUE)) %>%
     ungroup()
 }
+
+niveles_idv_matriz <- c("PSOE", "PP", "Vox", "Sumar", "Podemos", "ERC", "SALF",
+                        "Junts", "PNV", "Bildu", "CC", "OT+BL", "AB+NL", "Indecisos")
+
+niveles_recuerdo_matriz <- c("PSOE", "PP", "Vox", "Sumar", "OT+BL", "AB+NL", "<18")

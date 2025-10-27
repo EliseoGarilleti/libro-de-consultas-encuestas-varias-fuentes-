@@ -8,24 +8,31 @@ book:
   author: "Unidad de Análisis y Estudios"
   chapters:
     - index.qmd
-    - part: "2 · Intención de voto"
+    - part: "1 · Intención de voto"
       chapters:
         - 01_idv.qmd
         - 01_1_idv_genero.qmd
         - 01_2_idv_edad.qmd
         - 01_3_idv_ccaa.qmd
-
+    - part: "2 · Anexo"
+      chapters:
+        - 99_anexo_idv.qmd
+        - 99_anexo_matriz.qmd
 
 format:
   html:
     theme: cosmo
     toc: true
+    number-sections: false     
+    number-depth: 2            
     css: styles.css
     embed-resources: true
   pdf:
     documentclass: scrreprt
     pdf-engine: xelatex
     toc: true
+    number-sections: false
+    number-depth: 2
     prefer-html: true
     self-contained: true
     include-in-header:

@@ -55,3 +55,73 @@ theme_3 <- theme(
   plot.caption = element_text(family = "roboto-light", size = 30, color = "gray10"),
   plot.margin = margin(t = 10, r = 5, b = 10, l = 5)
 )
+
+theme_tablas_1 <- reactableTheme(
+  # === Estilo general de la tabla ===
+  style = list(
+    fontFamily = "Roboto, Helvetica, Arial, sans-serif",
+    fontSize = "14px",
+    color = "#111",
+    backgroundColor = "white"
+  ),
+
+  # === Encabezados ===
+  headerStyle = list(
+    backgroundColor = "#0f3754",
+    color = "white",
+    fontWeight = 400,        # Roboto Regular
+    textAlign = "center",
+    verticalAlign = "middle",
+    fontSize = "18px"
+  ),
+
+  # === Celdas ===
+  cellStyle = list(
+    fontWeight = 300,        # Roboto Light
+    textAlign = "center",
+    verticalAlign = "middle",
+    fontSize = "17px"
+  ),
+
+  # === Filas alternas ===
+  stripedColor = "#f8f9fa"
+)
+
+# ===============================
+#   FUNCIÓN PARA TÍTULOS DE TABLAS
+# ===============================
+titulo_tabla <- function(texto) {
+  htmltools::tags$h3(texto, class = "titulo-tabla")
+}
+
+columns = list(
+  Fecha = colDef(
+    align = "center",
+    headerStyle = list(textAlign = "center"),
+    html = TRUE,
+  ),
+  PSOE = colDef(align = "center", headerStyle = list(textAlign = "center")),
+  PP = colDef(align = "center", headerStyle = list(textAlign = "center")),
+  Vox = colDef(align = "center", headerStyle = list(textAlign = "center")),
+  Sumar = colDef(align = "center", headerStyle = list(textAlign = "center")),
+  Podemos = colDef(align = "center", headerStyle = list(textAlign = "center"))
+)
+
+
+# ===============================================
+#   CONFIGURACIÓN DE COLUMNAS CENTRADAS
+# ===============================================
+
+columnas_centradas <- function(df) {
+  cols <- names(df)
+  col_defs <- setNames(
+    lapply(cols, function(x) {
+      colDef(
+        align = "center",
+        headerStyle = list(textAlign = "center")
+      )
+    }),
+    cols
+  )
+  return(col_defs)
+}

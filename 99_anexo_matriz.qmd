@@ -1,0 +1,75 @@
+---
+title: "Matriz de transferencias"
+prefer-html: true
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, fig.path = "figures/")
+
+# Asegurar idioma español para los meses
+locales <- c("es_ES.UTF-8", "Spanish_Spain.1252", "es_ES")
+for (loc in locales) {
+  res <- try(Sys.setlocale("LC_TIME", loc), silent = TRUE)
+  if (!inherits(res, "try-error") && !is.na(res)) break
+}
+```
+
+```{r, include=FALSE}
+# Cargar entorno y configuraciones
+source("code/00_setup.R")
+source("code/01_theme.R")
+source("code/02_datos.R")
+```
+
+```{r, include=FALSE}
+df_matriz <- df %>%
+  left_join(mapeo_recuerdo, by = "recuerdo") %>%
+  left_join(mapeo_idv, by = "idv") %>% 
+  filter(mes == max(mes, na.rm = TRUE)) %>% 
+  filter(!is.na(recuerdo),
+         !is.na(idv)) 
+
+matriz <- df_matriz  %>% 
+  mutate(idv_matriz = factor(idv_matriz, levels = niveles_idv_matriz),
+         recuerdo_matriz = factor(recuerdo_matriz, levels = niveles_recuerdo_matriz)) %>%
+  group_by(recuerdo_matriz, idv_matriz) %>%
+  tally(wt = ponde_mes) %>%
+  mutate(perc = round(n / sum(n) * 100, 1)) %>%
+  select(-n) %>%
+  pivot_wider(names_from = recuerdo_matriz,
+              values_from = perc) %>%
+  arrange(idv_matriz)
+
+n_recuerdo <- df_matriz %>%
+  group_by(recuerdo_matriz) %>%
+  summarise(n=n()) %>%
+  mutate(n = round(n,0)) %>%
+  pivot_wider(names_from = recuerdo_matriz,
+              values_from = n) %>%
+  mutate(idv_matriz = "n")
+
+matriz_n_recuerdo<-bind_rows(matriz, n_recuerdo)
+```
+
+```{r, echo=FALSE}
+# Crear tabla
+htmltools::tagList(
+  titulo_tabla("Intención de voto (elecciones generales)"),
+
+  reactable(
+    matriz,
+    striped = TRUE,
+    highlight = TRUE,
+    bordered = FALSE,
+    compact = TRUE,
+    #defaultSorted = "Fecha",
+    #defaultSortOrder = "desc",
+    pagination = TRUE,
+    defaultPageSize = 15,
+    theme = theme_tablas_1,
+    columns = columnas_centradas(matriz),
+    width = "100%"
+  )
+)
+```
+
