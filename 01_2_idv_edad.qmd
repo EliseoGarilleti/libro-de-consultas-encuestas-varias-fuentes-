@@ -162,7 +162,6 @@ resumen_edad_final <- ultimo_mes_edad %>%
   )
 ```
 
-
 ```{r, results='asis', echo=FALSE}
 # Mostrar el resumen en HTML
 cat("<br>")
@@ -170,4 +169,3 @@ cat("<ul>")
 cat(paste(resumen_edad_final$texto, collapse = "\n"))
 cat("</ul>")
 ```
-

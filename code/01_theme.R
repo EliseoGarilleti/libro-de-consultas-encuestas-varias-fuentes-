@@ -4,7 +4,9 @@ colores_partidos <- c(
   "PP"     = "#1d4184",
   "Vox"    = "#5BC035",
   "Sumar"  = "#F57BA4",
-  "Podemos"= "#662D91"
+  "Podemos"= "#662D91",
+  "Indecisos" = "#7B7B7B",
+  "Abstención/Nulo" = "#2E2E2E"
 )
 
 # Theme general (puedes hacer variantes: theme_general, theme_facet, etc.)

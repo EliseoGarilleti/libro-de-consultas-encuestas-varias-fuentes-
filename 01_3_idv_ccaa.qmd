@@ -181,4 +181,3 @@ cat("<ul>")
 cat(paste(resumen_final_ccaa$texto, collapse = "\n"))
 cat("</ul>")
 ```
-

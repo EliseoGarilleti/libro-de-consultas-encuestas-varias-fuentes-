@@ -1,0 +1,173 @@
+---
+title: "Vox"
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, fig.path = "figures/")
+
+# Idioma para los meses
+locales <- c("es_ES.UTF-8", "Spanish_Spain.1252", "es_ES")
+for (loc in locales) {
+  res <- try(Sys.setlocale("LC_TIME", loc), silent = TRUE)
+  if (!inherits(res, "try-error") && !is.na(res)) break
+}
+
+# Cargar entorno y funciones
+source("code/00_setup.R")
+source("code/01_theme.R")
+source("code/02_datos.R")
+```
+
+```{r, include=FALSE}
+df_transfer_vox<-df %>% 
+  group_by(mes, recuerdo_group, idv_group) %>% 
+  tally(wt=ponde_mes_ajustada) %>% 
+  mutate(perc = round(n / sum(n) * 100, 0)) %>% 
+  filter(recuerdo_group %in% c("Vox")) %>% 
+  filter(idv_group %in% c("PSOE", "PP", "Vox", "Sumar", "Podemos", 
+                          "Indecisos", "Abstención/Nulo"))
+
+df_fieles <- df_transfer_vox %>% filter(idv_group == "Vox")
+df_fugas <- df_transfer_vox %>% filter(idv_group != "Vox")
+```
+
+```{r, echo=FALSE}
+p_fieles_vox <- ggplot(df_fieles, aes(
+  x = mes, y = perc, color = idv_group, group = idv_group
+)) +
+  # Línea estética SIN tooltip (lo anulamos explícitamente)
+  geom_line_interactive(
+    aes(tooltip = NA_character_),  # <- clave para anularlo
+    linewidth = .8
+  ) +
+  
+  # PUNTOS INVISIBLES: capturan el hover por mes (tooltip correcto) pero no se ven
+  geom_point_interactive(
+    data = df_fieles,
+    aes(
+      x = mes, y = perc, color = idv_group,
+      tooltip = paste0(
+        "<b>", idv_group, "</b><br>",
+        format(mes, "%B %Y", locale = "es_ES.UTF-8"), ": ",
+        perc, "%"
+      )
+    ),
+    size = 9, alpha = 0, stroke = 0, show.legend = FALSE, inherit.aes = FALSE
+  ) +
+  
+  # ÚLTIMO PUNTO VISIBLE (con tooltip)
+  geom_point_interactive(
+    data = ultimo_por_grupo(df_fieles, idv_group, mes),
+    aes(
+      x = mes, y = perc, color = idv_group,
+      tooltip = paste0(
+        "<b>", idv_group, "</b><br>",
+        format(mes, "%B %Y", locale = "es_ES.UTF-8"), ": ",
+        perc, "%"
+      )
+    ),
+    size = 3, inherit.aes = FALSE
+  ) +
+  
+  geom_hline(yintercept = 0, color = "black", linewidth = .2) +
+  scale_x_date(labels = label_date("%b %y", locale = "es_ES")) +
+  scale_color_manual(values = colores_partidos) +
+  theme_minimal() +
+  labs(
+    subtitle = "Porcentaje de votantes fieles"
+  ) +
+  theme_1
+
+# Render condicional (igual que ya tenías)
+if (knitr::is_html_output()) {
+  girafe(
+    ggobj = p_fieles_vox,
+    options = list(
+      opts_hover(css = "stroke-width:3px;opacity:0.9;"),
+      opts_tooltip(css = "background:white;color:black;padding:6px;
+                           border-radius:6px;box-shadow:0px 1px 3px rgba(0,0,0,0.2);
+                           font-family:Roboto;font-size:13px;"),
+      opts_toolbar(saveaspng = TRUE)
+    )
+  )
+} else {
+  dir.create("figures", showWarnings = FALSE)
+  static_plot_path <- file.path("figures", "p_fieles_vox_static.png")
+  ggsave(static_plot_path, plot = p_fieles_vox, width = 8, height = 5, dpi = 300)
+  Sys.sleep(1)
+  knitr::include_graphics(static_plot_path)
+}
+```
+
+```{r, results='asis', echo=FALSE}
+cat("<br>")
+```
+
+```{r, echo=FALSE}
+p_fugas_vox <- ggplot(df_fugas, aes(
+  x = mes, y = perc, color = idv_group, group = idv_group
+)) +
+  # Línea estética SIN tooltip (lo anulamos explícitamente)
+  geom_line_interactive(
+    aes(tooltip = NA_character_),  # <- clave para anularlo
+    linewidth = .8
+  ) +
+  
+  # PUNTOS INVISIBLES: capturan el hover por mes (tooltip correcto) pero no se ven
+  geom_point_interactive(
+    data = df_fugas,
+    aes(
+      x = mes, y = perc, color = idv_group,
+      tooltip = paste0(
+        "<b>", idv_group, "</b><br>",
+        format(mes, "%B %Y", locale = "es_ES.UTF-8"), ": ",
+        perc, "%"
+      )
+    ),
+    size = 9, alpha = 0, stroke = 0, show.legend = FALSE, inherit.aes = FALSE
+  ) +
+  
+  # ÚLTIMO PUNTO VISIBLE (con tooltip)
+  geom_point_interactive(
+    data = ultimo_por_grupo(df_fugas, idv_group, mes),
+    aes(
+      x = mes, y = perc, color = idv_group,
+      tooltip = paste0(
+        "<b>", idv_group, "</b><br>",
+        format(mes, "%B %Y", locale = "es_ES.UTF-8"), ": ",
+        perc, "%"
+      )
+    ),
+    size = 3, inherit.aes = FALSE
+  ) +
+  
+  geom_hline(yintercept = 0, color = "black", linewidth = .2) +
+  scale_x_date(labels = label_date("%b %y", locale = "es_ES")) +
+  scale_color_manual(values = colores_partidos) +
+  theme_minimal() +
+  labs(
+    subtitle = "Porcentaje de fugas a ____"
+  ) +
+  facet_wrap(~idv_group) +
+  theme_3
+
+# Render condicional (igual que ya tenías)
+if (knitr::is_html_output()) {
+  girafe(
+    ggobj = p_fugas_vox,
+    options = list(
+      opts_hover(css = "stroke-width:3px;opacity:0.9;"),
+      opts_tooltip(css = "background:white;color:black;padding:6px;
+                           border-radius:6px;box-shadow:0px 1px 3px rgba(0,0,0,0.2);
+                           font-family:Roboto;font-size:13px;"),
+      opts_toolbar(saveaspng = TRUE)
+    )
+  )
+} else {
+  dir.create("figures", showWarnings = FALSE)
+  static_plot_path <- file.path("figures", "p_fugas_vox_static.png")
+  ggsave(static_plot_path, plot = p_fugas_vox, width = 8, height = 5, dpi = 300)
+  Sys.sleep(1)
+  knitr::include_graphics(static_plot_path)
+}
+```

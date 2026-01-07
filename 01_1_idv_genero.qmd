@@ -162,7 +162,6 @@ resumen_genero_final <- ultimo_mes_genero %>%
   )
 ```
 
-
 ```{r, results='asis', echo=FALSE}
 # Mostrar el resumen en HTML
 cat("<br>")

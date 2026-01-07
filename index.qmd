@@ -34,4 +34,6 @@ En este documento se presentan gráficos y resumenes de diferentes variables rel
 
 El documento consta de la siguientes variables:
 
-* **Intención de voto**: Intención de voto a los principales partidos entre la población general y en función de diferentes variables sociodemográficas.
+-   **Intención de voto**: Intención de voto a los principales partidos entre la población general y en función de diferentes variables sociodemográficas.
+-   **Transferencias**: Porcentaje de votantes fieles y de fugas a otros partidos, a la abstención o que se encuentran indecisos
+-   **Variación:** Variación en puntos porcentuales de la IDV a los principales partidos con respecto a septiembre de 2023

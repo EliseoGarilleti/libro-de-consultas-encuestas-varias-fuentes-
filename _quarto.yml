@@ -14,7 +14,19 @@ book:
         - 01_1_idv_genero.qmd
         - 01_2_idv_edad.qmd
         - 01_3_idv_ccaa.qmd
-    - part: "2 · Anexo"
+    - part: "2 · Transferencias"
+      chapters:
+        - 02_transfer_psoe.qmd
+        - 02_transfer_pp.qmd
+        - 02_transfer_vox.qmd
+        - 02_transfer_sumar.qmd
+    - part: "3 · Variación en la intención de voto"
+      chapters:
+        - 03_vrcn_idv_psoe.qmd
+        - 03_vrcn_idv_pp.qmd
+        - 03_vrcn_idv_vox.qmd
+        - 03_vrcn_idv_sumar.qmd
+    - part: "4 · Anexo"
       chapters:
         - 99_anexo_idv.qmd
         - 99_anexo_matriz.qmd
@@ -23,23 +35,16 @@ format:
   html:
     theme: cosmo
     toc: true
-    number-sections: false     
-    number-depth: 2            
-    css: styles.css
-    embed-resources: true
-  pdf:
-    documentclass: scrreprt
-    pdf-engine: xelatex
-    toc: true
     number-sections: false
     number-depth: 2
-    prefer-html: true
-    self-contained: true
-    include-in-header:
-      - cover-style.tex
-    include-before-body:
-      - cover.tex
-    keep-tex: true
+    css: styles.css
+    embed-resources: true
+
+    page-layout: article   
+    grid:
+      sidebar-width: "250px"   # ancho cómodo para el índice
+      margin-width: "50px"     # margen a izquierda y derecha
+      body-width: "1000px"     # tamaño de contenido centrado
 
 execute:
   freeze: auto

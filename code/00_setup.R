@@ -27,6 +27,6 @@ ultimo_por_grupo <- function(data, grupo_var, tiempo_var) {
 }
 
 niveles_idv_matriz <- c("PSOE", "PP", "Vox", "Sumar", "Podemos", "ERC", "SALF",
-                        "Junts", "PNV", "Bildu", "CC", "OT+BL", "AB+NL", "Indecisos")
+                        "Junts", "AC", "PNV", "Bildu", "CC", "OT+BL", "AB+NL", "Indecisos")
 
 niveles_recuerdo_matriz <- c("PSOE", "PP", "Vox", "Sumar", "OT+BL", "AB+NL", "<18")

@@ -33,7 +33,7 @@ matriz <- df_matriz  %>%
   mutate(idv_matriz = factor(idv_matriz, levels = niveles_idv_matriz),
          recuerdo_matriz = factor(recuerdo_matriz, levels = niveles_recuerdo_matriz)) %>%
   group_by(recuerdo_matriz, idv_matriz) %>%
-  tally(wt = ponde_mes) %>%
+  tally(wt = ponde_mes_ajustada) %>%
   mutate(perc = round(n / sum(n) * 100, 1)) %>%
   select(-n) %>%
   pivot_wider(names_from = recuerdo_matriz,
@@ -54,7 +54,7 @@ matriz_n_recuerdo<-bind_rows(matriz, n_recuerdo)
 ```{r, echo=FALSE}
 # Crear tabla
 htmltools::tagList(
-  titulo_tabla("Intención de voto (elecciones generales)"),
+  titulo_tabla("Matriz de transferencias"),
 
   reactable(
     matriz,
@@ -72,4 +72,3 @@ htmltools::tagList(
   )
 )
 ```
-
