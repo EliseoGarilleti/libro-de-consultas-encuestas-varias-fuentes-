@@ -38,9 +38,9 @@ format:
     number-sections: false
     number-depth: 2
     css: styles.css
-    embed-resources: true
+    embed-resources: false
 
-    page-layout: article   
+    page-layout: article
     grid:
       sidebar-width: "250px"   # ancho cómodo para el índice
       margin-width: "50px"     # margen a izquierda y derecha

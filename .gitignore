@@ -2,12 +2,7 @@
 **/*.quarto_ipynb
 .Rproj.user
 
-# Archivos grandes generados (HTML)
-docs/*.html
-!docs/index.html
-
 # Archivos temporales y caches
 .DS_Store
 .RData
 .Rhistory
-*.html
