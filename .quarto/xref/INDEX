@@ -19,5 +19,29 @@
   },
   "99_anexo_matriz.qmd": {
     "99_anexo_matriz.html": "9641cbc3"
+  },
+  "02_transfer_psoe.qmd": {
+    "02_transfer_psoe.html": "5562c8ce"
+  },
+  "02_transfer_pp.qmd": {
+    "02_transfer_pp.html": "68522359"
+  },
+  "02_transfer_vox.qmd": {
+    "02_transfer_vox.html": "7f3a1c95"
+  },
+  "02_transfer_sumar.qmd": {
+    "02_transfer_sumar.html": "f815925b"
+  },
+  "03_vrcn_idv_psoe.qmd": {
+    "03_vrcn_idv_psoe.html": "2c15b5b8"
+  },
+  "03_vrcn_idv_pp.qmd": {
+    "03_vrcn_idv_pp.html": "1232dba6"
+  },
+  "03_vrcn_idv_vox.qmd": {
+    "03_vrcn_idv_vox.html": "e5e49b94"
+  },
+  "03_vrcn_idv_sumar.qmd": {
+    "03_vrcn_idv_sumar.html": "724e2fc9"
   }
 }
